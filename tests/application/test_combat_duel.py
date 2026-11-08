@@ -1,5 +1,6 @@
 """Application Unit Tests for Combat Duel Use Case and Service."""
 
+import uuid
 import pytest
 from application.dtos.combat_duel_dto import CombatDuelRequest
 from application.services.combat_duel_service import CombatDuelService
@@ -146,22 +147,23 @@ async def test_multi_modal_pipeline_methods(duel_components):
 @pytest.mark.asyncio
 async def test_repository_and_service_mission_history(duel_components):
     use_case, llm, repo = duel_components
+    target_id = f"msn-history-{uuid.uuid4().hex[:8]}"
 
     await repo.save_mission(
-        mission_id="msn-history-01",
+        mission_id=target_id,
         task_slug="history-test",
         status="VERIFIED_PASSED",
         tokens_used=50,
     )
     await repo.save_audit_event(
-        mission_id="msn-history-01",
+        mission_id=target_id,
         event_type="TEST_EVENT",
         event_hash="hash1",
         prev_hash="hash0",
         payload={"k": "v"},
     )
 
-    fetched = await repo.get_mission("msn-history-01")
+    fetched = await repo.get_mission(target_id)
     assert fetched is not None
     assert fetched["task_slug"] == "history-test"
 
@@ -170,4 +172,4 @@ async def test_repository_and_service_mission_history(duel_components):
 
     history = await repo.list_recent_missions(limit=50)
     assert len(history) > 0
-    assert any(m["mission_id"] == "msn-history-01" for m in history)
+    assert any(m["mission_id"] == target_id for m in history)

@@ -74,5 +74,6 @@ evaluate_all_act_iii.py
 scripts/analyze_all_competitors.py
 scripts/setup_cloudflare_tunnel.py
 !backend/requirements.txt
+!backend/templates/*.html
 !frontend/package.json
 !frontend/tsconfig.json
