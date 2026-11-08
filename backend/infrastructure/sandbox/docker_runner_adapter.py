@@ -105,10 +105,11 @@ class DockerRunnerAdapter(ISandboxRunner):
             # Graceful local fallback for systems without active Docker daemon or pre-built image
             return await self._run_isolated_subprocess_fallback(script_file, policy, container_name, on_stdout_chunk, on_stderr_chunk)
 
-        # 4 Containment Pillars docker flags
+        # 4 Containment Pillars docker flags (stdin stream execution: zero host-mount dependencies)
         docker_cmd: List[str] = [
             "docker",
             "run",
+            "-i",
             "--name",
             container_name,
             "--rm",
@@ -124,14 +125,10 @@ class DockerRunnerAdapter(ISandboxRunner):
             f"--pids-limit={policy.pids_limit}",
             "--tmpfs",
             policy.tmpfs_mount,
-            "-v",
-            f"{task_dir}:/workspace:ro",
-            "-w",
-            "/workspace",
             self.base_image,
             "python3",
             "-u",
-            "/workspace/script.py",
+            "-",
         ]
         # Filter out empty strings
         docker_cmd = [arg for arg in docker_cmd if arg]
@@ -154,6 +151,15 @@ class DockerRunnerAdapter(ISandboxRunner):
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
+
+            # Write script code directly into container standard input
+            if proc.stdin:
+                try:
+                    proc.stdin.write(script_code.encode("utf-8"))
+                    await proc.stdin.drain()
+                    proc.stdin.close()
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
 
             async def read_stream(stream, accumulator, callback):
                 while True:

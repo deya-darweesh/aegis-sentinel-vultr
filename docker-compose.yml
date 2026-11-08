@@ -8,19 +8,26 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MOCK_MODE=${MOCK_MODE:-true}
-      - VULTR_INFERENCE_API_KEY=${VULTR_INFERENCE_API_KEY:-}
-      - VULTR_INFERENCE_BASE_URL=${VULTR_INFERENCE_BASE_URL:-https://api.vultrinference.com/v1}
-      - DEFAULT_MODEL=${DEFAULT_MODEL:-kimi-k2-instruct}
-      - MAX_TOKENS_PER_CALL=512
-      - AUDIT_LOG_PATH=/app/audit_log.jsonl
-      - AUDIT_DB_PATH=/app/audit.db
+      - INFERENCE_API_KEY=${INFERENCE_API_KEY:-}
+      - VULTR_BASE_URL=${VULTR_BASE_URL:-https://api.vultrinference.com/v1}
+      - VULTR_MODEL=${VULTR_MODEL:-kimi-k2-instruct}
+      - VULTR_CODE_MODEL=${VULTR_CODE_MODEL:-deepseek-v4.1-flash-1017}
+      - MOCK_MODE=${MOCK_MODE:-false}
+      - SANDBOX_IMAGE=python:3.11-slim
+      - PREFER_GVISOR=false
+      - WORKSPACE_DIR=/app/data/workspaces
+      - LOG_DIR=/app/data/audit
+      - KEY_PATH=/app/data/secrets/ed25519.key
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/audit/aegis_sentinel.db
+      - HOST=0.0.0.0
+      - PORT=8000
     volumes:
       # Sibling container control for gVisor/Docker runner
       - /var/run/docker.sock:/var/run/docker.sock
-      # Persistent cryptographic audit logs
-      - ./data/audit_log.jsonl:/app/audit_log.jsonl
-      - ./data/audit.db:/app/audit.db
+      # Persistent cryptographic audit logs and keys
+      - ./data/audit:/app/data/audit
+      - ./data/secrets:/app/data/secrets
+      - ./data/workspaces:/app/data/workspaces
 
   caddy:
     image: caddy:2.8-alpine
@@ -39,3 +46,4 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+

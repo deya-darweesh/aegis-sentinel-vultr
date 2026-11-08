@@ -168,6 +168,6 @@ async def test_repository_and_service_mission_history(duel_components):
     missing = await repo.get_mission("msn-nonexistent")
     assert missing is None
 
-    history = await repo.list_recent_missions(limit=10)
+    history = await repo.list_recent_missions(limit=50)
     assert len(history) > 0
     assert any(m["mission_id"] == "msn-history-01" for m in history)

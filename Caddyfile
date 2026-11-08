@@ -1,7 +1,7 @@
 # Caddyfile: Auto-SSL Reverse Proxy for Vultr Agent Rush Hackathon
-# Automatically acquires Let's Encrypt certificates for any public domain or IP
+# Reverse proxy backend for direct IP and public domain access
 
-{$DOMAIN:localhost} {
+:80 {
     # SSE streaming configuration: disable buffering for real-time stdout/stderr
     reverse_proxy backend:8000 {
         header_up Host {host}
@@ -24,3 +24,4 @@
         format console
     }
 }
+

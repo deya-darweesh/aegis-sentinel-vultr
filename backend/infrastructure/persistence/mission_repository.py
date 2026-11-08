@@ -44,6 +44,7 @@ class MissionRepository(IMissionRepository):
                         task_slug=task_slug,
                         status=status,
                         tokens_used=tokens_used,
+                        created_at=datetime.now(timezone.utc),
                     )
                     session.add(new_mission)
 
