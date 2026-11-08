@@ -23,18 +23,20 @@ logger = configure_logger()
 async def lifespan(app: FastAPI):
     """Lifecycle hook for startup verification and shutdown."""
     await init_db()
-    print("=" * 70)
-    print("  AEGISSENTINEL: AUTONOMOUS CYBER ARENA & IMMUNITY ENGINE (VULTR)")
-    print("=" * 70)
-    print(f"  [CREDIT PRESERVATION] MOCK_MODE: {settings.MOCK_MODE} (Credit cost: $0.00)")
-    print(f"  [SANDBOX RUNTIME]    Detected:  {runner._detect_runtime()}")
-    print(f"  [DOCKER ENGINE]      Available: {runner.is_docker_available()}")
-    print(f"  [DATABASE ENGINE]    Active:    {settings.DATABASE_URL.split('://')[0]}")
-    print(f"  [CRYPTO SIGNER]      Public Key: {signer.public_key_hex[:24]}...")
-    print(f"  [AUDIT LEDGER]       Initial Hash: {ledger.get_latest_chain_hash()[:24]}...")
-    print("=" * 70)
+    logger.info("AEGISSENTINEL: AUTONOMOUS CYBER ARENA & IMMUNITY ENGINE (VULTR) INITIALIZED")
+    logger.info(
+        "AegisSentinel system status",
+        extra={
+            "mock_mode": settings.MOCK_MODE,
+            "runtime_engine": runner._detect_runtime(),
+            "docker_available": runner.is_docker_available(),
+            "database": settings.DATABASE_URL.split("://")[0],
+            "signer_public_key": signer.public_key_hex[:24] + "...",
+            "audit_ledger_initial_hash": ledger.get_latest_chain_hash()[:24] + "...",
+        },
+    )
     yield
-    print("Shutting down AegisSentinel Foundation...")
+    logger.info("Shutting down AegisSentinel Foundation...")
 
 
 app = FastAPI(
@@ -75,8 +77,7 @@ def index_dashboard():
 
     # Inject dynamic environment tokens into placeholders
     html_content = (
-        html_content
-        .replace("{{ RUNTIME_ENGINE }}", runner._detect_runtime())
+        html_content.replace("{{ RUNTIME_ENGINE }}", runner._detect_runtime())
         .replace("{{ DEFAULT_MODEL }}", settings.DEFAULT_MODEL)
         .replace("{{ LATEST_HASH }}", ledger.get_latest_chain_hash())
         .replace("{{ PUBLIC_KEY }}", signer.public_key_hex)

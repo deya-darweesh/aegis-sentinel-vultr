@@ -151,3 +151,29 @@ class ListMissionsResponse(BaseModel):
     """List of recent verification missions."""
 
     missions: List[MissionSummarySchema]
+
+
+class ChatCopilotRequest(BaseModel):
+    """Conversational SecOps prompt sent by the operator."""
+
+    message: str = Field(..., description="Natural language operator command or question")
+    code_snippet: Optional[str] = Field(default=None, description="Optional custom Python microservice code snippet")
+    session_id: Optional[str] = Field(default=None, description="Optional copilot session identifier")
+
+
+class ChatCopilotResponse(BaseModel):
+    """Structured conversational SecOps intelligence response."""
+
+    reply: str
+    mission_id: str
+    scenario: str
+    status: str
+    cvss_score: str
+    red_findings: str
+    blue_patch: str
+    pdf_report_url: str
+    voice_alert_url: str
+    duration_ms: float
+    memory_peak_mb: float
+    digest_sha256: str
+    ed25519_signature: str

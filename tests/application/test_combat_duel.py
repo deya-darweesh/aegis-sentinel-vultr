@@ -1,6 +1,7 @@
 """Application Unit Tests for Combat Duel Use Case and Service."""
 
 import uuid
+
 import pytest
 from application.dtos.combat_duel_dto import CombatDuelRequest
 from application.services.combat_duel_service import CombatDuelService

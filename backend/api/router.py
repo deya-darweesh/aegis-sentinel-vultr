@@ -8,6 +8,8 @@ Endpoints delegate execution lifecycle to TaskExecutionService (Rule 5).
 from api.schemas import (
     AuditEventSchema,
     AuditEventsResponse,
+    ChatCopilotRequest,
+    ChatCopilotResponse,
     ExecuteTaskRequest,
     ExecuteTaskResponse,
     ExecutionReceiptSchema,
@@ -25,9 +27,12 @@ from api.schemas import (
     VoiceCommandResponse,
 )
 from api.sse_broker import SSEBroker
+from application.dtos.secops_copilot_dto import SecOpsCopilotRequest
 from application.services.combat_duel_service import CombatDuelService
 from application.services.task_execution_service import TaskExecutionService
 from application.use_cases.execute_sandboxed_task import ExecuteSandboxedTaskUseCase
+from application.use_cases.execute_secops_copilot import ExecuteSecOpsCopilotUseCase
+from application.use_cases.generate_audit_report import GenerateAuditReportUseCase
 from application.use_cases.initiate_combat_duel import InitiateCombatDuelUseCase
 from application.use_cases.trigger_chaos_probe import TriggerChaosProbeUseCase
 from application.use_cases.verify_receipt import VerifyReceiptUseCase
@@ -39,6 +44,7 @@ from infrastructure.gateway.mock_inference_adapter import MockInferenceAdapter
 from infrastructure.gateway.vultr_inference_adapter import VultrInferenceAdapter
 from infrastructure.persistence.database import async_session_factory
 from infrastructure.persistence.mission_repository import MissionRepository
+from infrastructure.reporting.pdf_report_generator import PDFReportGenerator
 from infrastructure.sandbox.docker_runner_adapter import DockerRunnerAdapter
 from infrastructure.telemetry.audit_ledger_adapter import AuditLedgerAdapter
 
@@ -50,6 +56,7 @@ ledger = AuditLedgerAdapter()
 signer = ReceiptSigner()
 runner = DockerRunnerAdapter()
 repository = MissionRepository(session_factory=async_session_factory)
+pdf_generator = PDFReportGenerator()
 
 # Select Inference Gateway based on MOCK_MODE configuration ($200 Credit Protection)
 if settings.MOCK_MODE:
@@ -80,6 +87,20 @@ combat_duel_service = CombatDuelService(
     llm_gateway=llm_gateway,
     repository=repository,
     broadcast_fn=sse_broker.broadcast,
+)
+
+generate_audit_report_use_case = GenerateAuditReportUseCase(
+    repository=repository,
+    ledger=ledger,
+    signer=signer,
+    runner=runner,
+    pdf_generator=pdf_generator,
+)
+
+execute_secops_copilot_use_case = ExecuteSecOpsCopilotUseCase(
+    combat_duel_service=combat_duel_service,
+    ledger=ledger,
+    signer=signer,
 )
 
 
@@ -254,4 +275,47 @@ async def list_missions(limit: int = 20) -> ListMissionsResponse:
             )
             for r in records
         ]
+    )
+
+
+@router.get("/api/report/pdf/{mission_id}")
+async def get_mission_pdf_report(mission_id: str) -> Response:
+    """Generates an executive, print-perfect cryptographic PDF audit report."""
+    pdf_bytes = await generate_audit_report_use_case.execute(mission_id=mission_id)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=aegis_audit_{mission_id}.pdf"},
+    )
+
+
+@router.post("/api/chat", response_model=ChatCopilotResponse)
+async def chat_secops_copilot(
+    payload: ChatCopilotRequest,
+    background_tasks: BackgroundTasks,
+) -> ChatCopilotResponse:
+    """Conversational AI SecOps Copilot for natural language investigation, attack detonation, and automated immunization."""
+    request_dto = SecOpsCopilotRequest(
+        message=payload.message,
+        code_snippet=payload.code_snippet,
+        session_id=payload.session_id,
+    )
+    result = await execute_secops_copilot_use_case.execute(
+        request=request_dto,
+        schedule_background_task=background_tasks.add_task,
+    )
+    return ChatCopilotResponse(
+        reply=result.reply,
+        mission_id=result.mission_id,
+        scenario=result.scenario,
+        status=result.status,
+        cvss_score=result.cvss_score,
+        red_findings=result.red_findings,
+        blue_patch=result.blue_patch,
+        pdf_report_url=result.pdf_report_url,
+        voice_alert_url=result.voice_alert_url,
+        duration_ms=result.duration_ms,
+        memory_peak_mb=result.memory_peak_mb,
+        digest_sha256=result.digest_sha256,
+        ed25519_signature=result.ed25519_signature,
     )

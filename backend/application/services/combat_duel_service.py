@@ -21,12 +21,16 @@ class CombatDuelService:
         duel_use_case: InitiateCombatDuelUseCase,
         llm_gateway: ILLMGateway,
         repository: IMissionRepository,
-        broadcast_fn: Callable[[str, str, dict], Awaitable[None]],
+        broadcast_fn: Optional[Callable[[str, str, dict], Awaitable[None]]] = None,
     ):
         self.duel_use_case = duel_use_case
         self.llm = llm_gateway
         self.repository = repository
-        self.broadcast = broadcast_fn
+
+        async def _default_broadcast(task_id: str, event_type: str, payload: dict) -> None:
+            pass
+
+        self.broadcast = broadcast_fn or _default_broadcast
 
     def prepare_duel_pipeline(
         self,

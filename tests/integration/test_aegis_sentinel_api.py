@@ -85,3 +85,27 @@ def test_audit_events_endpoint(client: TestClient):
 def test_receipt_not_found(client: TestClient):
     response = client.get("/api/receipt/rcpt-nonexistent")
     assert response.status_code == 404
+
+
+def test_chat_secops_copilot_endpoint(client: TestClient):
+    payload = {
+        "message": "Detonate fork bomb memory exhaustion exploit and immunize",
+        "session_id": "test-session-001",
+    }
+    response = client.post("/api/chat", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert "mission_id" in data
+    assert data["scenario"] == "FORK_MEMORY_EXHAUSTION"
+    assert data["status"] == "IMMUNIZED"
+    assert "CVSS" in data["cvss_score"]
+    assert data["pdf_report_url"] == f"/api/report/pdf/{data['mission_id']}"
+    assert len(data["ed25519_signature"]) > 0
+
+
+def test_generate_pdf_report_endpoint(client: TestClient):
+    response = client.get("/api/report/pdf/msn-audit-integration-test")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert "attachment; filename=" in response.headers["content-disposition"]
+    assert response.content.startswith(b"%PDF-")
