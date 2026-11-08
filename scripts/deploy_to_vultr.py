@@ -31,9 +31,12 @@ def create_release_archive() -> Path:
 
     included_paths = [
         "backend",
+        "frontend",
         "sandboxes",
         "docker-compose.yml",
         "Caddyfile",
+        "alembic.ini",
+        "cloud-init.yaml",
         "scripts/setup_vultr_host.sh",
     ]
 
@@ -134,9 +137,10 @@ PORT=8000
     run_ssh_cmd(ssh, "cd /opt/aegis-sentinel && docker compose down || true")
     run_ssh_cmd(ssh, "cd /opt/aegis-sentinel && docker compose up -d --build")
 
-    # 9. Verify Container Status
+    # 9. Verify Container Status & Run Migrations
     time.sleep(5)
     run_ssh_cmd(ssh, "cd /opt/aegis-sentinel && docker compose ps")
+    run_ssh_cmd(ssh, "cd /opt/aegis-sentinel && docker compose exec -T backend python -m alembic upgrade head || true")
     run_ssh_cmd(ssh, "cd /opt/aegis-sentinel && docker compose logs backend --tail=30")
 
     ssh.close()

@@ -1,6 +1,6 @@
 import React from "react";
 
-interface ImmunityReceipt {
+export interface ImmunityReceipt {
   receipt_id: string;
   timestamp: string;
   task_slug: string;

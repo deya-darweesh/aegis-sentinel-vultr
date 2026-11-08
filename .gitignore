@@ -60,6 +60,7 @@ data/audit/*
 
 # Internal Research, Strategy Dossier & Agent Configs (CONFIDENTIAL - NEVER PUSH)
 docs/
+competitor_evaluations/
 AGENTS.md
 CLAUDE.md
 GEMINI.md
@@ -70,6 +71,7 @@ agent-standards/
 *.txt
 *.html
 evaluate_all_act_iii.py
+scripts/analyze_all_competitors.py
 !backend/requirements.txt
 !frontend/package.json
 !frontend/tsconfig.json

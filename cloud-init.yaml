@@ -1,0 +1,98 @@
+#cloud-config
+# ==============================================================================
+# AegisSentinel Vultr Cloud Compute (VX1) 1-Click Provisioning
+# Vultr: Agent Rush Hackathon 2026 (Co-located with KubeCon NA 2026)
+# ==============================================================================
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - curl
+  - wget
+  - git
+  - jq
+  - ufw
+  - ca-certificates
+  - gnupg
+  - lsb-release
+  - apt-transport-https
+
+write_files:
+  # 1. gVisor Docker Daemon Runtime Configuration
+  - path: /etc/docker/daemon.json
+    owner: root:root
+    permissions: '0644'
+    content: |
+      {
+        "runtimes": {
+          "runsc": {
+            "path": "/usr/local/bin/runsc",
+            "runtimeArgs": [
+              "--ignore-cgroups=false",
+              "--network=none"
+            ]
+          }
+        }
+      }
+
+  # 2. Systemd Service Unit for AegisSentinel
+  - path: /etc/systemd/system/aegis-sentinel.service
+    owner: root:root
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=AegisSentinel Autonomous Cyber Shield
+      Requires=docker.service
+      After=docker.service network.target
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      WorkingDirectory=/opt/aegis-sentinel
+      ExecStart=/usr/bin/docker compose up -d
+      ExecStop=/usr/bin/docker compose down
+      TimeoutStartSec=0
+
+      [Install]
+      WantedBy=multi-user.target
+
+runcmd:
+  # 1. Install Docker Engine CE
+  - install -m 0755 -d /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  - chmod a+r /etc/apt/keyrings/docker.gpg
+  - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+  - apt-get update -y
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  # 2. Install Google gVisor (runsc) Kernel Sandbox
+  - |
+    ARCH=$(uname -m)
+    URL="https://storage.googleapis.com/gvisor/releases/release/latest/${ARCH}"
+    wget "${URL}/runsc" -O /usr/local/bin/runsc
+    wget "${URL}/runsc.sha512" -O /usr/local/bin/runsc.sha512
+    cd /usr/local/bin && sha512sum -c runsc.sha512 && rm runsc.sha512
+    chmod a+rx /usr/local/bin/runsc
+    systemctl restart docker
+
+  # 3. Configure UFW Firewall for Strict Containment
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow 22/tcp comment 'SSH Host Management'
+  - ufw allow 80/tcp comment 'HTTP Caddy Proxy'
+  - ufw allow 443/tcp comment 'HTTPS Caddy TLS'
+  - ufw --force enable
+
+  # 4. Provision Production Directories
+  - mkdir -p /opt/aegis-sentinel/data/audit
+  - mkdir -p /opt/aegis-sentinel/data/secrets
+  - mkdir -p /opt/aegis-sentinel/data/workspaces
+  - chmod 700 /opt/aegis-sentinel/data/secrets
+
+  # 5. Pre-pull Sandbox Execution Image
+  - docker pull python:3.11-slim
+
+  # 6. Enable systemd service
+  - systemctl daemon-reload
+  - systemctl enable aegis-sentinel.service
