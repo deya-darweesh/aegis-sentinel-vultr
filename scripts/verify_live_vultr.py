@@ -26,7 +26,8 @@ def test_endpoints():
     res = requests.post(f"{SERVER}/api/threat-diagram", json={"prompt": "Attack vector topology"})
     print(f"Status: {res.status_code}")
     diagram_data = res.json()
-    print(json.dumps(diagram_data, indent=2))
+    preview = diagram_data.get("diagram_url", "")[:80] + "..." if len(diagram_data.get("diagram_url", "")) > 80 else diagram_data.get("diagram_url")
+    print(f'{{"diagram_url": "{preview}"}}')
     assert res.status_code == 200
     assert "diagram_url" in diagram_data
 
@@ -44,10 +45,11 @@ def test_endpoints():
     print("\n5. GET /api/missions...")
     res = requests.get(f"{SERVER}/api/missions")
     print(f"Status: {res.status_code}")
-    missions = res.json()
-    print(f"Found {len(missions)} recorded missions in database.")
-    if missions:
-        print(json.dumps(missions[0], indent=2))
+    data = res.json()
+    missions_list = data.get("missions", [])
+    print(f"Found {len(missions_list)} recorded missions in database.")
+    if missions_list:
+        print(json.dumps(missions_list[0], indent=2))
 
     print("\n[SUCCESS] ALL LIVE TESTS PASSED ON VULTR CLOUD COMPUTE!")
 
