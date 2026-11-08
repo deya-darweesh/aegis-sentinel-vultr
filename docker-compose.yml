@@ -1,0 +1,41 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: vultr-containment-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - MOCK_MODE=${MOCK_MODE:-true}
+      - VULTR_INFERENCE_API_KEY=${VULTR_INFERENCE_API_KEY:-}
+      - VULTR_INFERENCE_BASE_URL=${VULTR_INFERENCE_BASE_URL:-https://api.vultrinference.com/v1}
+      - DEFAULT_MODEL=${DEFAULT_MODEL:-kimi-k2-instruct}
+      - MAX_TOKENS_PER_CALL=512
+      - AUDIT_LOG_PATH=/app/audit_log.jsonl
+      - AUDIT_DB_PATH=/app/audit.db
+    volumes:
+      # Sibling container control for gVisor/Docker runner
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Persistent cryptographic audit logs
+      - ./data/audit_log.jsonl:/app/audit_log.jsonl
+      - ./data/audit.db:/app/audit.db
+
+  caddy:
+    image: caddy:2.8-alpine
+    container_name: vultr-caddy-ssl
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+
+volumes:
+  caddy_data:
+  caddy_config:

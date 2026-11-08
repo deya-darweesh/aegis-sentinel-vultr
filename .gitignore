@@ -35,6 +35,12 @@ htmlcov/
 .env
 .env.*
 !.env.example
+*.key
+*.pem
+*.db
+*.sqlite
+*.sqlite3
+*.jsonl
 data/secrets/*
 !data/secrets/.gitkeep
 data/workspaces/*
@@ -52,7 +58,7 @@ data/audit/*
 .agents/
 .claude/
 
-# Internal Research, Strategy Dossier & Agent Configs (CONFIDENTIAL)
+# Internal Research, Strategy Dossier & Agent Configs (CONFIDENTIAL - NEVER PUSH)
 docs/
 AGENTS.md
 CLAUDE.md
@@ -64,3 +70,6 @@ agent-standards/
 *.txt
 *.html
 evaluate_all_act_iii.py
+!backend/requirements.txt
+!frontend/package.json
+!frontend/tsconfig.json
