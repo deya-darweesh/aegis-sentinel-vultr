@@ -1,0 +1,100 @@
+name: AegisSentinel CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Run Automated Test Suite & Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install pytest pytest-asyncio pytest-cov httpx hypothesis greenlet
+
+      - name: Run Domain & Integration Tests
+        run: |
+          pytest --cov=backend --cov-report=term-missing
+
+  deploy:
+    name: Auto Deploy to Vultr Cloud Compute
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vultr Host via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VULTR_HOST }}
+          username: ${{ secrets.VULTR_USER }}
+          password: ${{ secrets.VULTR_PASS }}
+          port: 22
+          script_stop: true
+          script: |
+            set -e
+            echo "[*] Starting production deployment on Vultr host..."
+
+            # 1. Ensure target directory exists
+            mkdir -p /opt/aegis-sentinel
+            cd /opt/aegis-sentinel
+
+            # 2. Check if git repo exists or clone
+            if [ -d ".git" ]; then
+              echo "[*] Pulling latest changes from main..."
+              git fetch origin main
+              git reset --hard origin/main
+            else
+              echo "[*] Cloning repository..."
+              git clone https://github.com/deya-darweesh/aegis-sentinel-vultr.git .
+            fi
+
+            # 3. Write / update production .env
+            cat << 'EOF' > .env
+            INFERENCE_API_KEY=${{ secrets.INFERENCE_API_KEY }}
+            VULTR_BASE_URL=https://api.vultrinference.com/v1
+            VULTR_MODEL=kimi-k2-instruct
+            VULTR_CODE_MODEL=deepseek-v4.1-flash-1017
+            MOCK_MODE=false
+            SANDBOX_IMAGE=python:3.11-slim
+            PREFER_GVISOR=false
+            WORKSPACE_DIR=./data/workspaces
+            LOG_DIR=./data/audit
+            KEY_PATH=./data/secrets/ed25519.key
+            DATABASE_URL=sqlite+aiosqlite:////app/data/audit/aegis_sentinel.db
+            DOMAIN=${{ secrets.DOMAIN }}
+            HOST=0.0.0.0
+            PORT=8000
+            EOF
+
+            # 4. Ensure data directories exist
+            mkdir -p data/audit data/secrets data/workspaces
+
+            # 5. Build and launch updated Docker Compose containers
+            echo "[*] Rebuilding and launching containers..."
+            docker compose down || true
+            docker compose up -d --build
+
+            # 6. Run database migrations
+            echo "[*] Running database migrations..."
+            docker compose exec -T backend python -m alembic upgrade head || true
+
+            # 7. Check container status
+            docker compose ps
+            echo "[+] Deployment completed successfully!"

@@ -5,8 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: vultr-containment-backend
     restart: unless-stopped
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     environment:
       - INFERENCE_API_KEY=${INFERENCE_API_KEY:-}
       - VULTR_BASE_URL=${VULTR_BASE_URL:-https://api.vultrinference.com/v1}
