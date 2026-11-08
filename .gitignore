@@ -72,6 +72,7 @@ agent-standards/
 *.html
 evaluate_all_act_iii.py
 scripts/analyze_all_competitors.py
+scripts/setup_cloudflare_tunnel.py
 !backend/requirements.txt
 !frontend/package.json
 !frontend/tsconfig.json
