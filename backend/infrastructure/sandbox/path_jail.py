@@ -22,20 +22,27 @@ class PathJail:
         self.base_dir.mkdir(parents=True, exist_ok=True)
 
     def validate_safe_path(self, target_path: Path) -> Path:
-        resolved = Path(target_path).resolve()
+        target = Path(target_path)
+
+        # Symlink escape check before resolution follows target
+        if target.is_symlink():
+            raw_link = os.readlink(target)
+            link_target = Path(raw_link)
+            if not link_target.is_absolute():
+                link_target = (target.parent / link_target).resolve()
+            else:
+                link_target = link_target.resolve()
+            try:
+                link_target.relative_to(self.base_dir)
+            except ValueError:
+                raise PathJailViolation(f"Symlink Traversal Blocked: Symlink '{target}' targets outside jail -> '{link_target}'.")
+
+        resolved = target.resolve()
 
         # Boundary check
         try:
             resolved.relative_to(self.base_dir)
         except ValueError:
             raise PathJailViolation(f"Path Traversal Blocked: '{target_path}' escapes sandbox jail '{self.base_dir}'.")
-
-        # Symlink escape check
-        if resolved.is_symlink():
-            link_target = Path(os.readlink(resolved)).resolve()
-            try:
-                link_target.relative_to(self.base_dir)
-            except ValueError:
-                raise PathJailViolation(f"Symlink Traversal Blocked: Symlink '{resolved}' targets outside jail -> '{link_target}'.")
 
         return resolved
