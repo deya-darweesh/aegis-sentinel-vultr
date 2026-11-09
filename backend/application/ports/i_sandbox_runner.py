@@ -27,6 +27,14 @@ class ExecutionOutput:
 class ISandboxRunner(Protocol):
     """Protocol for executing code in a hardened quarantine container."""
 
+    def detect_runtime(self) -> str:
+        """Returns the active container execution runtime (e.g. 'runsc' or 'runc')."""
+        ...
+
+    def is_docker_available(self) -> bool:
+        """Checks if container virtualization daemon is accessible."""
+        ...
+
     async def run_quarantined_script(
         self,
         script_code: str,

@@ -52,7 +52,7 @@ class GenerateAuditReportUseCase:
         status = receipt.status if receipt else "MATHEMATICALLY_VERIFIED"
         duration = receipt.duration_ms if receipt else 142.8
         memory = receipt.memory_peak_mb if receipt else 14.2
-        runtime = receipt.runtime_engine if receipt else self.runner._detect_runtime()
+        runtime = receipt.runtime_engine if receipt else self.runner.detect_runtime()
         digest = receipt.digest_sha256 if receipt else self.ledger.get_latest_chain_hash()
         signature = receipt.ed25519_signature if (receipt and receipt.ed25519_signature) else self.signer.sign_digest(digest)
         pub_key = self.signer.public_key_hex

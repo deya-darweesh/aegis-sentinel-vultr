@@ -38,6 +38,10 @@ class DockerRunnerAdapter(ISandboxRunner):
         self.prefer_gvisor = prefer_gvisor if prefer_gvisor is not None else settings.PREFER_GVISOR
         self._runtime: Optional[str] = None
 
+    def detect_runtime(self) -> str:
+        """Public accessor detecting if gVisor (runsc) is available on the Docker daemon."""
+        return self._detect_runtime()
+
     def _detect_runtime(self) -> str:
         """Detects if gVisor (runsc) is available on the Docker daemon."""
         if self._runtime:

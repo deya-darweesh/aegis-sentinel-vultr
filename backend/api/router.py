@@ -110,7 +110,7 @@ def health_status() -> HealthStatusResponse:
     return HealthStatusResponse(
         status="operational",
         mock_mode=settings.MOCK_MODE,
-        runtime_engine=runner._detect_runtime(),
+        runtime_engine=runner.detect_runtime(),
         docker_available=runner.is_docker_available(),
         default_model=settings.DEFAULT_MODEL,
         public_key_ed25519=signer.public_key_hex,

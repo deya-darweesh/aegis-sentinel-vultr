@@ -77,7 +77,7 @@ def index_dashboard():
 
     # Inject dynamic environment tokens into placeholders
     html_content = (
-        html_content.replace("{{ RUNTIME_ENGINE }}", runner._detect_runtime())
+        html_content.replace("{{ RUNTIME_ENGINE }}", runner.detect_runtime())
         .replace("{{ DEFAULT_MODEL }}", settings.DEFAULT_MODEL)
         .replace("{{ LATEST_HASH }}", ledger.get_latest_chain_hash())
         .replace("{{ PUBLIC_KEY }}", signer.public_key_hex)
