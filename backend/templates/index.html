@@ -718,6 +718,13 @@
       const card = document.getElementById(cardId);
       if (!card) return;
 
+      const scenarioMap = {
+        'SUPPLY_CHAIN_LEAK': 'Supply-Chain Secret Exfiltration',
+        'FORK_MEMORY_EXHAUSTION': 'Memory Fork Bomb DoS',
+        'FINANCIAL_INVARIANT_BUG': 'Financial Precision Invariant Drift'
+      };
+      const friendlyScenario = scenarioMap[data.scenario] || data.scenario.replace(/_/g, ' ');
+
       const inner = card.querySelector('.bg-white');
       inner.innerHTML = `
         <!-- Header & Badges -->
@@ -725,11 +732,11 @@
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
             <div>
-              <span class="text-sm font-semibold text-slate-900">${escapeHtml(data.scenario)}</span>
-              <span class="block text-[11px] font-mono text-slate-500">Mission: ${escapeHtml(data.mission_id)}</span>
+              <span class="text-sm font-semibold text-slate-900">${escapeHtml(friendlyScenario)}</span>
+              <span class="block text-[11px] font-mono text-slate-500 truncate max-w-xs" title="${escapeHtml(data.mission_id)}">Mission: ${escapeHtml(data.mission_id)}</span>
             </div>
           </div>
-          <div class="flex items-center gap-1.5">
+          <div class="flex items-center gap-1.5 shrink-0">
             <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-rose-50 text-rose-700 border border-rose-200 font-medium">
               ${escapeHtml(data.cvss_score.split(' - ')[0])}
             </span>
@@ -747,33 +754,33 @@
         <!-- Side-by-Side Red vs Blue Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
           <!-- Red Attack -->
-          <div class="rounded-xl border border-red-200 bg-red-50/50 p-3 space-y-1.5">
+          <div class="rounded-xl border border-red-200 bg-red-50/40 p-3 space-y-1.5">
             <div class="flex items-center justify-between text-[11px] font-mono font-medium text-red-800">
-              <span class="flex items-center gap-1.5"><i class="fa-solid fa-crosshairs"></i> Red Attack Probe</span>
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-crosshairs"></i> Red Strike</span>
               <span class="text-[10px] text-red-600">DeepSeek-V4.1</span>
             </div>
-            <p class="text-xs text-slate-800 leading-normal">${escapeHtml(data.red_findings)}</p>
+            <p class="text-xs text-slate-800 leading-normal break-words">${escapeHtml(data.red_findings)}</p>
           </div>
 
           <!-- Blue Patch -->
-          <div class="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3 space-y-1.5">
+          <div class="rounded-xl border border-emerald-200 bg-emerald-50/40 p-3 space-y-1.5">
             <div class="flex items-center justify-between text-[11px] font-mono font-medium text-emerald-800">
-              <span class="flex items-center gap-1.5"><i class="fa-solid fa-code-merge"></i> Blue Remediation</span>
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-code-merge"></i> Blue Hotpatch</span>
               <span class="text-[10px] text-emerald-600">Qwen-3.8</span>
             </div>
-            <p class="text-xs text-slate-800 leading-normal">${escapeHtml(data.blue_patch)}</p>
+            <p class="text-xs text-slate-800 leading-normal break-words">${escapeHtml(data.blue_patch)}</p>
           </div>
         </div>
 
         <!-- Cryptographic Receipt Row -->
         <div class="rounded-xl border border-slate-200 bg-slate-50 p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
           <div class="space-y-0.5 truncate max-w-sm">
-            <div class="text-[10px] text-slate-500">ED25519 SIGNATURE:</div>
-            <div class="text-slate-800 truncate text-[11px]"><code>${escapeHtml(data.ed25519_signature.slice(0, 36))}...</code></div>
+            <div class="text-[10px] text-slate-500 uppercase tracking-wide">Ed25519 Hardware Signature:</div>
+            <div class="text-slate-800 truncate text-[11px]" title="${escapeHtml(data.ed25519_signature)}"><code>${escapeHtml(data.ed25519_signature.slice(0, 36))}...</code></div>
           </div>
           <div class="flex items-center gap-3 shrink-0 text-slate-600 text-[11px]">
             <span>Latency: <b class="text-slate-900">${data.duration_ms}ms</b></span>
-            <span>RAM: <b class="text-slate-900">${data.memory_peak_mb}MB</b></span>
+            <span>Peak RAM: <b class="text-slate-900">${data.memory_peak_mb}MB</b></span>
           </div>
         </div>
 
