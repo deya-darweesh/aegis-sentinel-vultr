@@ -33,3 +33,4 @@ class SecOpsCopilotResult:
     memory_peak_mb: float
     digest_sha256: str
     ed25519_signature: str
+    is_audit: bool = True

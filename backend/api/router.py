@@ -318,4 +318,5 @@ async def chat_secops_copilot(
         memory_peak_mb=result.memory_peak_mb,
         digest_sha256=result.digest_sha256,
         ed25519_signature=result.ed25519_signature,
+        is_audit=result.is_audit,
     )

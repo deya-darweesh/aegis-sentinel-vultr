@@ -370,11 +370,16 @@
         });
         const data = await res.json();
 
-        // Animate Step Progression
-        animatePipeline(cardId, () => {
+        if (data.is_audit) {
+          // Animate Step Progression for Security Audits
+          animatePipeline(cardId, () => {
+            renderFinishedCard(cardId, data);
+            confetti({ particleCount: 30, spread: 35, origin: { y: 0.7 } });
+          });
+        } else {
+          // Instant Conversational Response
           renderFinishedCard(cardId, data);
-          confetti({ particleCount: 30, spread: 35, origin: { y: 0.7 } });
-        });
+        }
 
       } catch (err) {
         renderErrorCard(cardId, err.message);
@@ -414,20 +419,11 @@
       const thread = document.getElementById('chat-thread');
       const div = document.createElement('div');
       div.id = cardId;
-      div.className = 'bg-white rounded-2xl border border-slate-200 p-5 space-y-3 shadow-xs';
+      div.className = 'bg-white rounded-2xl border border-slate-200 p-4 space-y-2 shadow-xs';
       div.innerHTML = `
-        <div class="flex items-center justify-between text-xs text-slate-500">
-          <span class="font-medium text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-spinner fa-spin text-slate-600"></i>
-            Analyzing workload in air-gapped enclave...
-          </span>
-          <span class="font-mono text-[10px]">gVisor runsc</span>
-        </div>
-        <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
-          <span id="${cardId}-s1" class="text-slate-800 font-medium">1. Red Strike &rarr;</span>
-          <span id="${cardId}-s2">2. Blue Patch &rarr;</span>
-          <span id="${cardId}-s3">3. Verification &rarr;</span>
-          <span id="${cardId}-s4">4. Signed Seal</span>
+        <div class="flex items-center gap-2 text-xs text-slate-600">
+          <i class="fa-solid fa-circle-notch fa-spin text-slate-500"></i>
+          <span>AegisSentinel is thinking...</span>
         </div>
       `;
       thread.appendChild(div);
@@ -435,6 +431,25 @@
     }
 
     function animatePipeline(cardId, done) {
+      const card = document.getElementById(cardId);
+      if (card) {
+        card.innerHTML = `
+          <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+            <span class="font-medium text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-spinner fa-spin text-slate-600"></i>
+              Analyzing workload in air-gapped enclave...
+            </span>
+            <span class="font-mono text-[10px]">gVisor runsc</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
+            <span id="${cardId}-s1" class="text-slate-800 font-medium">1. Red Strike &rarr;</span>
+            <span id="${cardId}-s2">2. Blue Patch &rarr;</span>
+            <span id="${cardId}-s3">3. Verification &rarr;</span>
+            <span id="${cardId}-s4">4. Signed Seal</span>
+          </div>
+        `;
+      }
+
       setTimeout(() => {
         const s2 = document.getElementById(`${cardId}-s2`);
         if (s2) s2.className = 'text-slate-800 font-medium';
@@ -454,6 +469,36 @@
       const card = document.getElementById(cardId);
       if (!card) return;
 
+      // Handle Conversational Guidance Response
+      if (!data.is_audit) {
+        card.innerHTML = `
+          <div class="flex items-center gap-2 border-b border-slate-100 pb-2.5 text-xs font-semibold text-slate-900">
+            <div class="w-5 h-5 rounded bg-slate-900 text-white flex items-center justify-center text-[10px]">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <span>AegisSentinel Copilot</span>
+          </div>
+          <div class="text-xs sm:text-sm text-slate-700 leading-relaxed space-y-2 pt-1">
+            ${formatMarkdown(data.reply)}
+          </div>
+          <div class="pt-3 flex flex-wrap gap-1.5 border-t border-slate-100 text-xs">
+            <span class="text-slate-400 text-[11px] self-center mr-1">Suggestions:</span>
+            <button onclick="submitPrompt('Audit payment gateway for secret exfiltration')" class="px-2.5 py-1 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 text-[11px] transition">
+              🛡️ Audit Payment Gateway
+            </button>
+            <button onclick="submitPrompt('Detonate recursive fork bomb memory test')" class="px-2.5 py-1 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 text-[11px] transition">
+              💥 Detonate Fork Bomb
+            </button>
+            <button onclick="submitPrompt('Test settlement engine for decimal float drift')" class="px-2.5 py-1 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 text-[11px] transition">
+              ⚖️ Test Float Drift
+            </button>
+          </div>
+        `;
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        return;
+      }
+
+      // Handle Full Adversarial Audit Response
       const scenarioTitles = {
         'SUPPLY_CHAIN_LEAK': 'Supply-Chain Secret Exfiltration',
         'FORK_MEMORY_EXHAUSTION': 'Memory Fork Bomb DoS',
@@ -480,7 +525,7 @@
 
         <!-- Verdict Text -->
         <div class="text-xs text-slate-700 leading-relaxed">
-          <p>${escapeHtml(data.reply).replace(/### /g, '<b>').replace(/\n\n/g, '<br/>').replace(/- \*\*(.*?)\*\*/g, '&bull; <b>$1</b>')}</p>
+          ${formatMarkdown(data.reply)}
         </div>
 
         <!-- Red & Blue Analysis Cards -->
@@ -529,6 +574,17 @@
         </div>
       `;
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function formatMarkdown(str) {
+      if (!str) return '';
+      return escapeHtml(str)
+        .replace(/### (.*?)\n/g, '<h3 class="font-semibold text-slate-900 text-sm mt-1 mb-1">$1</h3>')
+        .replace(/\*\*(.*?)\*\*/g, '<b class="text-slate-900 font-semibold">$1</b>')
+        .replace(/\*(.*?)\*/g, '<span class="italic text-slate-800">$1</span>')
+        .replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded bg-slate-100 text-slate-800 font-mono text-[11px]">$1</code>')
+        .replace(/- (.*?)\n/g, '&bull; $1<br/>')
+        .replace(/\n\n/g, '<br/><br/>');
     }
 
     function renderErrorCard(cardId, msg) {

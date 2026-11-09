@@ -108,3 +108,57 @@ async def test_copilot_supply_chain_intent_classification(copilot_use_case):
     assert result.status == "IMMUNIZED"
     assert len(dispatched_tasks) == 1
     assert "### AegisSentinel Security Audit" in result.reply
+    assert result.is_audit is True
+
+
+@pytest.mark.asyncio
+async def test_copilot_greeting_conversational_response(copilot_use_case):
+    """Greeting keywords return friendly conversational guidance without dispatching duels."""
+    dispatched_tasks = []
+
+    def mock_schedule(fn):
+        dispatched_tasks.append(fn)
+
+    req = SecOpsCopilotRequest(message="hi")
+    result = await copilot_use_case.execute(req, schedule_background_task=mock_schedule)
+
+    assert result.is_audit is False
+    assert result.scenario == "CONVERSATIONAL"
+    assert result.status == "READY"
+    assert result.pdf_report_url == ""
+    assert len(dispatched_tasks) == 0
+    assert "Hello! I am **AegisSentinel**" in result.reply
+
+
+@pytest.mark.asyncio
+async def test_copilot_gvisor_informational_query(copilot_use_case):
+    """Informational questions about gVisor explain isolation without executing exploits."""
+    dispatched_tasks = []
+
+    def mock_schedule(fn):
+        dispatched_tasks.append(fn)
+
+    req = SecOpsCopilotRequest(message="explain how gvisor sandbox isolates code")
+    result = await copilot_use_case.execute(req, schedule_background_task=mock_schedule)
+
+    assert result.is_audit is False
+    assert result.scenario == "CONVERSATIONAL"
+    assert "gVisor (runsc) Hardware Enclave Containment" in result.reply
+    assert len(dispatched_tasks) == 0
+
+
+@pytest.mark.asyncio
+async def test_copilot_maker_breaker_explanation(copilot_use_case):
+    """Questions about Maker-Breaker duel explain architecture without running attacks."""
+    dispatched_tasks = []
+
+    def mock_schedule(fn):
+        dispatched_tasks.append(fn)
+
+    req = SecOpsCopilotRequest(message="what is the dual agent maker breaker arena?")
+    result = await copilot_use_case.execute(req, schedule_background_task=mock_schedule)
+
+    assert result.is_audit is False
+    assert result.scenario == "CONVERSATIONAL"
+    assert "Dual-Agent Maker-Breaker Arena" in result.reply
+    assert len(dispatched_tasks) == 0

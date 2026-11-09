@@ -35,21 +35,122 @@ class ExecuteSecOpsCopilotUseCase:
         request: SecOpsCopilotRequest,
         schedule_background_task: Callable[..., Any],
     ) -> SecOpsCopilotResult:
-        """Executes operator intent, schedules an air-gapped duel, and yields conversational findings."""
-        msg = request.message.lower()
+        """Executes operator intent, schedules an air-gapped duel when auditing, and yields conversational findings."""
+        msg = request.message.strip()
+        msg_lower = msg.lower()
         custom_code = request.code_snippet
+        has_code = bool(custom_code and custom_code.strip())
 
         logger.info(
             "SecOps Copilot received operator directive",
             extra={
                 "message_length": len(request.message),
-                "has_custom_code": bool(custom_code),
+                "has_custom_code": has_code,
                 "session_id": request.session_id,
             },
         )
 
-        # 1. Route intent dynamically based on operator command
-        if any(k in msg for k in ("memory", "fork", "dos", "bomb", "leak", "alloc", "exhaust")):
+        # 1. Detect Conversational vs. Audit intent
+        is_question = any(
+            msg_lower.startswith(q)
+            for q in ("what is", "what are", "how does", "how do", "how can", "who are", "explain", "describe", "tell me", "can you explain")
+        )
+
+        audit_triggers = (
+            "audit",
+            "test",
+            "scan",
+            "check",
+            "detonate",
+            "attack",
+            "probe",
+            "exploit",
+            "simulate",
+            "benchmark",
+            "verify",
+            "patch",
+            "memory",
+            "fork",
+            "dos",
+            "bomb",
+            "leak",
+            "alloc",
+            "exhaust",
+            "finance",
+            "rounding",
+            "drift",
+            "crypto",
+            "token",
+            "ledger",
+            "decimal",
+            "precision",
+            "payment",
+            "exfiltration",
+            "sniffer",
+        )
+        is_audit_intent = has_code or (not is_question and any(trigger in msg_lower for trigger in audit_triggers))
+
+        # ---------------------------------------------------------
+        # Case A: Conversational / Guidance / Informational Mode
+        # ---------------------------------------------------------
+        if not is_audit_intent:
+            if any(k in msg_lower for k in ("gvisor", "runsc", "enclave", "sandbox", "jail")):
+                reply_md = (
+                    "### gVisor (runsc) Hardware Enclave Containment\n\n"
+                    "AegisSentinel executes all untrusted workloads and adversarial attack probes inside **gVisor (`runsc`)**, "
+                    "a secure application kernel implementing a virtualized Linux syscall interface on Vultr Cloud Compute.\n\n"
+                    "- **Zero Kernel Escapes:** Syscalls are intercepted in userspace, shielding the host kernel.\n"
+                    "- **Strict Air-Gap:** Containers run with `--network none`, eliminating outbound socket exfiltration.\n"
+                    "- **Cgroups Ceilings:** Enforces 256MB hard memory limits and single-core CPU quotas.\n\n"
+                    "Ready to test? Try asking: *'Audit payment gateway for secret exfiltration'* or paste custom code."
+                )
+            elif any(k in msg_lower for k in ("maker", "breaker", "duel", "adversarial")):
+                reply_md = (
+                    "### Dual-Agent Maker-Breaker Arena\n\n"
+                    "AegisSentinel pairs two specialized frontier models in an iterative adversarial loop:\n\n"
+                    "1. **Red Agent (Breaker - DeepSeek-V4.1):** Reverse-engineers target code to craft zero-day exploit payloads.\n"
+                    "2. **Blue Agent (Maker - Qwen-3.8):** Synthesizes defensive invariants and AST validation hotpatches.\n"
+                    "3. **Enclave Notary:** Validates execution inside gVisor and issues an **Ed25519 signed receipt**.\n\n"
+                    "Ready to test? Try asking: *'Simulate a recursive fork bomb'* to watch Maker-Breaker in action."
+                )
+            else:
+                reply_md = (
+                    "### AegisSentinel AI SecOps Copilot\n\n"
+                    "Hello! I am **AegisSentinel**, your autonomous AI SecOps Copilot powered by dual-agent Maker-Breaker intelligence "
+                    "and hardware-isolated gVisor sandboxing on Vultr.\n\n"
+                    "**What I can do for you:**\n"
+                    "- **Microservice Security Audits:** Intercept secret leaks, memory exhaustion, or financial drift.\n"
+                    "- **Adversarial Strike Simulation:** Red Agent detonates safe attack probes in an air-gapped container.\n"
+                    "- **Automated Hotpatching:** Blue Agent synthesizes verified patches that heal vulnerabilities.\n"
+                    "- **Cryptographic Attestation:** Issue Ed25519 hardware-signed receipts and multi-page PDF audit reports.\n\n"
+                    "**Try asking:**\n"
+                    "- *'Audit payment gateway for credential exfiltration'*\n"
+                    "- *'Detonate recursive memory fork bomb'*\n"
+                    "- *'Test settlement engine for decimal precision drift'*\n"
+                    "- Or click **Code** to attach your custom Python workload."
+                )
+
+            return SecOpsCopilotResult(
+                reply=reply_md,
+                mission_id="",
+                scenario="CONVERSATIONAL",
+                status="READY",
+                cvss_score="N/A",
+                red_findings="",
+                blue_patch="",
+                pdf_report_url="",
+                voice_alert_url="/api/voice-alert",
+                duration_ms=0.0,
+                memory_peak_mb=0.0,
+                digest_sha256="",
+                ed25519_signature="",
+                is_audit=False,
+            )
+
+        # ---------------------------------------------------------
+        # Case B: Adversarial Security Audit & Duel Execution Mode
+        # ---------------------------------------------------------
+        if any(k in msg_lower for k in ("memory", "fork", "dos", "bomb", "alloc", "exhaust", "oom")):
             scenario = "FORK_MEMORY_EXHAUSTION"
             task_slug = "memory-fork-worker"
             cvss = "CVSS 7.5 (High) - Resource Exhaustion Denial of Service"
@@ -58,9 +159,9 @@ class ExecuteSecOpsCopilotUseCase:
                 "inside 256MB cgroups limit. Caught by hard SIGKILL 137."
             )
             blue_summary = (
-                "Blue Agent (Qwen-3.8) synthesized streaming generator pipeline processing data lazily. " "Peak RAM dropped to 14.2MB."
+                "Blue Agent (Qwen-3.8) synthesized streaming generator pipeline processing data lazily. Peak RAM dropped to 14.2MB."
             )
-        elif any(k in msg for k in ("finance", "rounding", "drift", "crypto", "token", "ledger", "decimal", "precision")):
+        elif any(k in msg_lower for k in ("finance", "rounding", "drift", "crypto", "token", "ledger", "decimal", "precision")):
             scenario = "FINANCIAL_INVARIANT_BUG"
             task_slug = "ledger-settlement-engine"
             cvss = "CVSS 8.2 (High) - Decimal Drift & Invariant Logic Corruption"
@@ -128,4 +229,5 @@ class ExecuteSecOpsCopilotUseCase:
             memory_peak_mb=memory_mb,
             digest_sha256=chain_hash,
             ed25519_signature=signature_hex,
+            is_audit=True,
         )
