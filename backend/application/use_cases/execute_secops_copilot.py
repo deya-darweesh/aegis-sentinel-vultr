@@ -106,7 +106,7 @@ class ExecuteSecOpsCopilotUseCase:
 
         # 4. Synthesize conversational Markdown response (minimalist & high-signal)
         reply_md = (
-            f"### 🛡️ AegisSentinel Security Audit: `{task_slug}`\n\n"
+            f"### AegisSentinel Security Audit: `{task_slug}`\n\n"
             f"Workload analyzed inside an air-gapped **gVisor hardware enclave** on Vultr Cloud Compute.\n\n"
             f"- **Vulnerability Identified:** `{cvss}`\n"
             f"- **Blast Radius:** **0.00%** (Quarantine Enforced &bull; 0 Secrets Leaked)\n"

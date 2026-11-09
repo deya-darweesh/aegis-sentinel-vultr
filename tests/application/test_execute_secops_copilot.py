@@ -107,4 +107,4 @@ async def test_copilot_supply_chain_intent_classification(copilot_use_case):
     assert "9.8" in result.cvss_score
     assert result.status == "IMMUNIZED"
     assert len(dispatched_tasks) == 1
-    assert "### 🛡️ AegisSentinel Security Audit" in result.reply
+    assert "### AegisSentinel Security Audit" in result.reply
