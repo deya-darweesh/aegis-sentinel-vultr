@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AegisSentinel — Autonomous AI SecOps Copilot</title>
 
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Inter"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            sans: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
             mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
           }
         }
@@ -20,866 +20,563 @@
     }
   </script>
 
-  <!-- Google Fonts & FontAwesome -->
+  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 
   <style>
     body {
-      background-color: #f8fafc;
+      background-color: #fafafa;
       color: #0f172a;
       font-family: 'Inter', sans-serif;
     }
 
-    /* Custom Slim Scrollbars */
+    /* Minimal custom scrollbar */
     ::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
+      width: 4px;
+      height: 4px;
     }
     ::-webkit-scrollbar-track {
-      background: #f1f5f9;
+      background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
+      background: #e2e8f0;
+      border-radius: 9999px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
-
-    /* Pulse animation */
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
-    }
-    .status-pulse {
-      animation: pulse-dot 2s infinite ease-in-out;
+      background: #cbd5e1;
     }
   </style>
 </head>
 
-<body class="h-screen flex flex-col overflow-hidden text-slate-800 antialiased bg-slate-50">
+<body class="min-h-screen flex flex-col bg-stone-50/50 text-slate-800 antialiased selection:bg-slate-200">
 
-  <!-- ================= TOP NAVIGATION BAR (MINIMALIST LIGHT) ================= -->
-  <header class="h-14 border-b border-slate-200 bg-white/95 backdrop-blur px-4 sm:px-6 flex items-center justify-between shrink-0 z-30 shadow-xs">
-    <!-- Left: Brand & Mobile Sidebar Toggle -->
-    <div class="flex items-center gap-3">
-      <button onclick="toggleSidebar()" class="md:hidden text-slate-500 hover:text-slate-900 p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 transition">
-        <i class="fa-solid fa-bars text-sm"></i>
-      </button>
-
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs">
-          <i class="fa-solid fa-shield-halved text-sm"></i>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="text-sm font-semibold tracking-tight text-slate-900">AegisSentinel</span>
-            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-medium">SecOps Copilot</span>
-          </div>
-          <div class="text-[11px] text-slate-500 hidden sm:block">Vultr Agent Rush 2026 &bull; Blast Radius Zero</div>
-        </div>
+  <!-- ================= SLEEK TOP NAV (MINIMALIST & CLEAN) ================= -->
+  <header class="h-14 border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 flex items-center justify-between">
+    <!-- Brand -->
+    <div class="flex items-center gap-2.5">
+      <div class="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center text-white text-xs shadow-xs">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-semibold text-sm tracking-tight text-slate-900">AegisSentinel</span>
+        <span class="text-[10px] text-slate-400 font-mono hidden sm:inline">&bull; Vultr Agent Rush 2026</span>
       </div>
     </div>
 
-    <!-- Center: Enclave Status Badges -->
-    <div class="hidden lg:flex items-center gap-3 text-xs font-mono">
-      <div class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 status-pulse"></span>
-        <span class="text-slate-500">Enclave:</span>
-        <span class="text-slate-800 font-medium">{{ RUNTIME_ENGINE }}</span>
-      </div>
-      <div class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 flex items-center gap-2">
-        <i class="fa-solid fa-server text-blue-600 text-[10px]"></i>
-        <span class="text-slate-500">Node:</span>
-        <span class="text-slate-800">Vultr VX1</span>
-      </div>
-      <div class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 flex items-center gap-2">
-        <i class="fa-solid fa-key text-amber-600 text-[10px]"></i>
-        <span class="text-slate-500">Signer:</span>
-        <span class="text-slate-800">{{ PUBLIC_KEY }}...</span>
-      </div>
-    </div>
-
-    <!-- Right: Action Controls -->
-    <div class="flex items-center gap-2">
-      <button onclick="runChaosTest()" id="btn-chaos-top"
-              class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-mono font-medium transition">
-        <i class="fa-solid fa-bolt text-amber-600"></i>
-        <span>1-Click Containment Moment</span>
+    <!-- Right Controls -->
+    <div class="flex items-center gap-2 text-xs">
+      <!-- 1-Click Containment Moment Action -->
+      <button onclick="runChaosTest()" id="btn-chaos-action"
+              class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs transition flex items-center gap-1.5">
+        <i class="fa-solid fa-bolt text-amber-500 text-[11px]"></i>
+        <span class="hidden sm:inline">1-Click Containment Moment</span>
+        <span class="sm:hidden">1-Click Test</span>
       </button>
 
-      <button onclick="toggleTerminalDrawer()" id="btn-toggle-terminal"
-              class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-mono transition">
-        <i class="fa-solid fa-terminal text-blue-600"></i>
-        <span class="hidden sm:inline">Terminal</span>
+      <!-- History Toggle -->
+      <button onclick="toggleHistoryDrawer()" title="View Recent Audit Missions"
+              class="p-1.5 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition">
+        <i class="fa-solid fa-clock-rotate-left"></i>
       </button>
 
-      <button onclick="clearChatThread()" title="Clear Chat Thread"
-              class="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-transparent hover:border-slate-200 transition">
-        <i class="fa-solid fa-rotate-right text-xs"></i>
+      <!-- Reset -->
+      <button onclick="resetConversation()" title="New Audit Session"
+              class="p-1.5 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition">
+        <i class="fa-solid fa-pen-to-square"></i>
       </button>
     </div>
   </header>
 
 
-  <!-- ================= MAIN VIEWPORT (SIDEBAR + CONVERSATIONAL CANVAS) ================= -->
-  <div class="flex-1 flex overflow-hidden relative">
+  <!-- ================= MAIN CONVERSATION CANVAS ================= -->
+  <main class="flex-1 flex flex-col justify-between max-w-3xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-10">
 
-    <!-- BACKDROP FOR MOBILE SIDEBAR -->
-    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/30 z-20 hidden md:hidden"></div>
+    <!-- Messages Container -->
+    <div id="messages-container" class="space-y-6 flex-1">
 
-    <!-- LEFT SIDEBAR: SESSIONS & THREAT PRESETS -->
-    <aside id="copilot-sidebar"
-           class="w-72 bg-white border-r border-slate-200 flex flex-col shrink-0 absolute md:static inset-y-0 left-0 z-20 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
-
-      <!-- New Chat Button -->
-      <div class="p-3.5 border-b border-slate-200">
-        <button onclick="startNewSession()"
-                class="w-full py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs flex items-center justify-center gap-2 shadow-xs transition">
-          <i class="fa-solid fa-plus text-xs"></i>
-          <span>New Security Audit</span>
-        </button>
-      </div>
-
-      <!-- Quick Threat Scenario Presets -->
-      <div class="p-3.5 border-b border-slate-200 space-y-2">
-        <div class="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-          <span>Target Presets</span>
-          <span class="text-blue-600 font-medium">Air-Gapped</span>
+      <!-- Centered Welcome State (shown before first message) -->
+      <div id="welcome-state" class="py-12 sm:py-20 text-center space-y-4 max-w-xl mx-auto">
+        <div class="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center justify-center mx-auto text-slate-900 text-xl">
+          <i class="fa-solid fa-shield-halved"></i>
         </div>
-        <div class="space-y-1 text-xs">
-          <button onclick="sendPresetPrompt('Audit payment gateway service for credential exfiltration and unauthorized network sockets')"
-                  class="w-full text-left p-2 rounded-lg hover:bg-slate-100 border border-transparent hover:border-slate-200 transition flex items-center gap-2.5 group">
-            <div class="w-6 h-6 rounded bg-rose-50 text-rose-600 flex items-center justify-center text-[10px] shrink-0">
-              <i class="fa-solid fa-shield-virus"></i>
-            </div>
-            <div class="truncate">
-              <div class="text-slate-800 group-hover:text-blue-600 font-medium truncate">Payment Gateway</div>
-              <div class="text-[10px] text-slate-500 truncate">CWE-200 Secret Leak</div>
-            </div>
-          </button>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900">How can I secure your workload?</h1>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1.5 max-w-md mx-auto leading-relaxed">
+            Autonomous dual-agent Maker-Breaker copilot. Detonate simulated exploits, synthesize invariant patches, and verify in an air-gapped sandbox.
+          </p>
+        </div>
 
-          <button onclick="sendPresetPrompt('Detonate recursive memory allocator fork bomb to test cgroups memory ceiling limits')"
-                  class="w-full text-left p-2 rounded-lg hover:bg-slate-100 border border-transparent hover:border-slate-200 transition flex items-center gap-2.5 group">
-            <div class="w-6 h-6 rounded bg-amber-50 text-amber-600 flex items-center justify-center text-[10px] shrink-0">
-              <i class="fa-solid fa-bomb"></i>
-            </div>
-            <div class="truncate">
-              <div class="text-slate-800 group-hover:text-blue-600 font-medium truncate">Memory Fork Bomb</div>
-              <div class="text-[10px] text-slate-500 truncate">CWE-400 Resource Exhaustion</div>
-            </div>
+        <!-- Suggestion Pills -->
+        <div class="pt-3 flex flex-wrap justify-center gap-2 text-xs">
+          <button onclick="submitPrompt('Audit payment gateway microservice for secret exfiltration and outbound socket leaks')"
+                  class="px-3 py-1.5 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 shadow-xs transition">
+            🛡️ Secret Exfiltration Audit
           </button>
-
-          <button onclick="sendPresetPrompt('Audit transaction settlement engine for IEEE 754 decimal rounding drift and broken balance invariants')"
-                  class="w-full text-left p-2 rounded-lg hover:bg-slate-100 border border-transparent hover:border-slate-200 transition flex items-center gap-2.5 group">
-            <div class="w-6 h-6 rounded bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] shrink-0">
-              <i class="fa-solid fa-scale-balanced"></i>
-            </div>
-            <div class="truncate">
-              <div class="text-slate-800 group-hover:text-blue-600 font-medium truncate">Financial Settlement</div>
-              <div class="text-[10px] text-slate-500 truncate">CWE-682 Float Drift</div>
-            </div>
+          <button onclick="submitPrompt('Detonate recursive fork bomb to test cgroups memory ceiling (256MB) limits')"
+                  class="px-3 py-1.5 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 shadow-xs transition">
+            💥 Fork Bomb DoS Test
+          </button>
+          <button onclick="submitPrompt('Test transaction ledger settlement engine for IEEE 754 decimal rounding drift')"
+                  class="px-3 py-1.5 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 shadow-xs transition">
+            ⚖️ Financial Invariant Drift
           </button>
         </div>
       </div>
 
-      <!-- Recent Audit History -->
-      <div class="flex-1 overflow-y-auto p-3.5 space-y-2">
-        <div class="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-          <span>Recent Missions</span>
-          <button onclick="loadMissionHistory()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-rotate text-[10px]"></i></button>
-        </div>
-        <div id="mission-history-list" class="space-y-1 text-xs font-mono text-slate-600">
-          <div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
-            <span class="truncate">payment-gateway</span>
-            <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-semibold">VERIFIED</span>
-          </div>
-          <div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
-            <span class="truncate">memory-fork-worker</span>
-            <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-semibold">VERIFIED</span>
-          </div>
-        </div>
-      </div>
+      <!-- Thread List -->
+      <div id="chat-thread" class="space-y-6"></div>
 
-      <!-- Cryptographic Ledger Attestation Box -->
-      <div class="p-3.5 border-t border-slate-200 bg-slate-50 space-y-1.5">
-        <div class="flex items-center justify-between text-[11px] font-mono">
-          <span class="text-slate-500">Audit Ledger Root:</span>
-          <span class="text-slate-900 font-semibold truncate max-w-[110px]" title="{{ LATEST_HASH }}">{{ LATEST_HASH }}...</span>
-        </div>
-        <div class="text-[10px] text-slate-500 flex items-center gap-1.5">
-          <i class="fa-solid fa-certificate text-emerald-600"></i>
-          <span>Ed25519 Hardware Notary Certified</span>
-        </div>
-      </div>
-    </aside>
+    </div>
 
 
-    <!-- CENTER: CHATGPT-STYLE CONVERSATIONAL CANVAS -->
-    <main class="flex-1 flex flex-col bg-slate-50 overflow-hidden relative">
+    <!-- ================= MINIMALIST PROMPT INPUT ================= -->
+    <div class="pt-4 sticky bottom-4 bg-stone-50/90 backdrop-blur-xs">
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-xs p-2.5 focus-within:border-slate-400 transition">
+        <!-- Input Textarea -->
+        <textarea id="prompt-input"
+                  rows="1"
+                  placeholder="Ask Aegis Copilot to audit an endpoint, test for leaks, or paste code..."
+                  class="w-full bg-transparent border-0 text-sm text-slate-800 placeholder-slate-400 focus:ring-0 resize-none px-2 py-1 max-h-36 leading-relaxed"
+                  onkeydown="handleKeyDown(event)"></textarea>
 
-      <!-- Chat Thread Messages Container -->
-      <div id="chat-thread-container" class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-5">
+        <!-- Bottom Tool Bar inside Input -->
+        <div class="flex items-center justify-between pt-1 px-1 border-t border-slate-100 text-xs">
+          <div class="flex items-center gap-1.5 text-slate-400">
+            <!-- Code Attach -->
+            <button onclick="toggleCodeModal()" title="Attach Custom Microservice Code"
+                    id="btn-code"
+                    class="p-1.5 rounded-md hover:text-slate-800 hover:bg-slate-100 transition">
+              <i class="fa-solid fa-code text-xs"></i>
+            </button>
 
-        <!-- Welcome Banner / Hero State -->
-        <div id="welcome-hero-card" class="max-w-2xl mx-auto py-8 sm:py-12 text-center space-y-4">
-          <div class="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto text-blue-600 text-2xl shadow-xs">
-            <i class="fa-solid fa-shield-halved"></i>
-          </div>
-          <div>
-            <h1 class="text-2xl font-bold tracking-tight text-slate-900">AegisSentinel SecOps Copilot</h1>
-            <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">
-              Autonomous dual-agent Maker-Breaker arena providing an instant 1-Click Containment Moment. Audit microservices, simulate threats, and verify code invariance.
-            </p>
+            <!-- Voice -->
+            <button onclick="toggleVoice()" title="Voice Dictation"
+                    id="btn-voice"
+                    class="p-1.5 rounded-md hover:text-slate-800 hover:bg-slate-100 transition">
+              <i class="fa-solid fa-microphone text-xs"></i>
+            </button>
+
+            <!-- Enclave status badge -->
+            <span class="text-[10px] font-mono text-slate-400 ml-1 hidden sm:inline">
+              Sandbox: {{ RUNTIME_ENGINE }} &bull; Ed25519 Enclave
+            </span>
           </div>
 
-          <!-- Prompt Suggestions Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left pt-2 max-w-xl mx-auto">
-            <button onclick="sendPresetPrompt('Audit payment gateway microservice for credentials exfiltration and outbound leaks')"
-                    class="bg-white border border-slate-200 hover:border-blue-400 p-3.5 rounded-xl shadow-xs hover:shadow-sm transition group">
-              <div class="text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition flex items-center gap-2">
-                <i class="fa-solid fa-shield-halved text-blue-600"></i>
-                Audit Payment Gateway
-              </div>
-              <p class="text-[11px] text-slate-500 mt-1">Intercept supply-chain credential sniffing & verify air-gap.</p>
-            </button>
-
-            <button onclick="sendPresetPrompt('Detonate recursive fork bomb memory allocator inside container')"
-                    class="bg-white border border-slate-200 hover:border-blue-400 p-3.5 rounded-xl shadow-xs hover:shadow-sm transition group">
-              <div class="text-xs font-semibold text-slate-900 group-hover:text-amber-600 transition flex items-center gap-2">
-                <i class="fa-solid fa-fire-flame-curved text-amber-600"></i>
-                Detonate Fork Bomb
-              </div>
-              <p class="text-[11px] text-slate-500 mt-1">Verify cgroups memory hard-ceiling (256MB) & SIGKILL interception.</p>
-            </button>
-
-            <button onclick="sendPresetPrompt('Test transaction ledger settlement engine for decimal precision drift')"
-                    class="bg-white border border-slate-200 hover:border-blue-400 p-3.5 rounded-xl shadow-xs hover:shadow-sm transition group">
-              <div class="text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition flex items-center gap-2">
-                <i class="fa-solid fa-coins text-blue-600"></i>
-                Test Financial Precision
-              </div>
-              <p class="text-[11px] text-slate-500 mt-1">Detect float drift and synthesize fixed-point invariants.</p>
-            </button>
-
-            <button onclick="openCustomCodeModal()"
-                    class="bg-white border border-slate-200 hover:border-blue-400 p-3.5 rounded-xl shadow-xs hover:shadow-sm transition group">
-              <div class="text-xs font-semibold text-slate-900 group-hover:text-emerald-600 transition flex items-center gap-2">
-                <i class="fa-solid fa-code text-emerald-600"></i>
-                Audit Custom Code
-              </div>
-              <p class="text-[11px] text-slate-500 mt-1">Paste Python code to trigger automated Red/Blue dual execution.</p>
-            </button>
-          </div>
-        </div>
-
-        <!-- Dynamic Message Stream (Injected by JS) -->
-        <div id="chat-messages-stream" class="max-w-3xl mx-auto space-y-5"></div>
-
-      </div>
-
-
-      <!-- BOTTOM PROMPT BAR -->
-      <div class="p-3.5 sm:p-4 border-t border-slate-200 bg-white shrink-0">
-        <div class="max-w-3xl mx-auto space-y-2">
-
-          <!-- Quick Prompt Chips Row -->
-          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-mono">
-            <span class="text-slate-400 text-[11px] shrink-0">Prompts:</span>
-            <button onclick="sendPresetPrompt('Audit Payment Gateway for secret exfiltration')"
-                    class="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition">
-              🛡️ Payment Gateway
-            </button>
-            <button onclick="sendPresetPrompt('Detonate recursive fork bomb to test cgroups ceiling')"
-                    class="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition">
-              💥 Fork Bomb
-            </button>
-            <button onclick="sendPresetPrompt('Test settlement engine for decimal precision drift')"
-                    class="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition">
-              ⚖️ Precision Drift
-            </button>
-            <button onclick="runChaosTest()"
-                    class="px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 shrink-0 transition">
-              ⚡ 1-Click Chaos
-            </button>
-          </div>
-
-          <!-- Input Bar Surface -->
-          <div class="rounded-xl border border-slate-300 bg-white p-2 flex items-end gap-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition shadow-xs">
-            <!-- Code Attachment Button -->
-            <button onclick="openCustomCodeModal()" title="Attach Custom Microservice Code"
-                    id="btn-code-attach"
-                    class="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 transition shrink-0">
-              <i class="fa-solid fa-code text-sm"></i>
-            </button>
-
-            <!-- Voice Dictation Button (Whisper) -->
-            <button onclick="toggleVoiceRecording()" title="Spoken Voice Command"
-                    id="btn-voice-dictate"
-                    class="p-2 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-slate-100 transition shrink-0">
-              <i class="fa-solid fa-microphone text-sm"></i>
-            </button>
-
-            <!-- Textarea -->
-            <textarea id="copilot-input"
-                      rows="1"
-                      placeholder="Ask AegisSentinel to audit a service, simulate a breach, or paste code..."
-                      class="flex-1 bg-transparent border-0 text-sm text-slate-900 placeholder-slate-400 focus:ring-0 resize-none py-1.5 px-1 max-h-36 leading-relaxed"
-                      onkeydown="handleInputKeyDown(event)"></textarea>
-
-            <!-- Send Button -->
-            <button onclick="submitCopilotMessage()" id="btn-submit-message"
-                    class="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
-              <i class="fa-solid fa-arrow-up text-sm"></i>
-            </button>
-          </div>
-
+          <!-- Submit Button -->
+          <button onclick="submitMessage()" id="btn-send"
+                  class="px-3 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition flex items-center gap-1.5 disabled:opacity-40">
+            <span>Send</span>
+            <i class="fa-solid fa-arrow-up text-[10px]"></i>
+          </button>
         </div>
       </div>
+      <div class="text-[11px] text-slate-400 text-center mt-2 font-mono">
+        All executions isolated in air-gapped gVisor sandbox. Cryptographically notarized.
+      </div>
+    </div>
 
-    </main>
-
-  </div>
+  </main>
 
 
-  <!-- ================= COLLAPSIBLE BOTTOM TERMINAL DRAWER ================= -->
-  <div id="terminal-drawer"
-       class="border-t border-slate-200 bg-white fixed inset-x-0 bottom-0 z-40 transform translate-y-full transition-transform duration-300 ease-in-out shadow-lg">
-    <!-- Drawer Header -->
-    <div class="h-9 px-4 bg-slate-100 border-b border-slate-200 flex items-center justify-between text-xs font-mono text-slate-600">
+  <!-- ================= SLIDE-OVER RECENT MISSIONS DRAWER ================= -->
+  <div id="history-backdrop" onclick="toggleHistoryDrawer()" class="fixed inset-0 bg-slate-900/20 backdrop-blur-xs z-40 hidden"></div>
+  <aside id="history-drawer"
+         class="fixed inset-y-0 right-0 w-80 bg-white border-l border-slate-200 z-50 transform translate-x-full transition-transform duration-200 ease-in-out flex flex-col p-4 shadow-lg">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-terminal text-blue-600"></i>
-        <span class="text-slate-900 font-medium">Sandbox Execution Stream</span>
-        <span class="text-[10px] text-slate-500">(gVisor runsc kernel events)</span>
+        <i class="fa-solid fa-clock-rotate-left text-slate-500 text-xs"></i>
+        <span class="text-sm font-semibold text-slate-900">Recent Audit Missions</span>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="copyTerminalOutput()" class="hover:text-slate-900 px-2 py-0.5 rounded hover:bg-slate-200 transition">Copy</button>
-        <button onclick="clearTerminalOutput()" class="hover:text-slate-900 px-2 py-0.5 rounded hover:bg-slate-200 transition">Clear</button>
-        <button onclick="toggleTerminalDrawer()" class="hover:text-slate-900 p-1 rounded hover:bg-slate-200 transition"><i class="fa-solid fa-xmark"></i></button>
-      </div>
+      <button onclick="toggleHistoryDrawer()" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <!-- Drawer Console Output (Clean Minimalist Light Stream) -->
-    <div id="terminal-stream-console" class="p-3 h-60 overflow-y-auto font-mono text-xs text-slate-800 space-y-1 bg-slate-50 border-t border-slate-100">
-      <div class="text-slate-500">[SYSTEM_READY] AegisSentinel containment sandbox active. Network air-gap enforced.</div>
+
+    <!-- History List -->
+    <div id="drawer-mission-list" class="flex-1 overflow-y-auto py-3 space-y-1.5 text-xs font-mono">
+      <div class="text-slate-400 text-center py-6">No recent missions</div>
     </div>
-  </div>
+
+    <!-- Cryptographic Root Footer -->
+    <div class="border-t border-slate-100 pt-3 text-[11px] font-mono space-y-1 text-slate-500">
+      <div>Ledger: <span class="text-slate-800 font-semibold">{{ LATEST_HASH }}...</span></div>
+      <div>Signer: <span class="text-slate-800 font-semibold">{{ PUBLIC_KEY }}...</span></div>
+    </div>
+  </aside>
 
 
-  <!-- ================= ATTACH CUSTOM CODE MODAL ================= -->
-  <div id="custom-code-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-xl rounded-2xl overflow-hidden border border-slate-200 shadow-xl flex flex-col max-h-[90vh]">
-      <div class="p-4 border-b border-slate-200 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-code text-blue-600"></i>
-          <span class="text-sm font-semibold text-slate-900">Attach Custom Microservice Code</span>
-        </div>
-        <button onclick="closeCustomCodeModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button>
+  <!-- ================= ATTACH CODE MODAL ================= -->
+  <div id="code-modal" class="fixed inset-0 bg-slate-900/30 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-xl overflow-hidden flex flex-col">
+      <div class="p-3.5 border-b border-slate-100 flex items-center justify-between">
+        <span class="text-xs font-semibold text-slate-900">Attach Microservice Code</span>
+        <button onclick="toggleCodeModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="p-4 space-y-2 flex-1 overflow-y-auto">
-        <p class="text-xs text-slate-500">Paste Python code to execute inside the air-gapped sandbox:</p>
-        <textarea id="modal-code-input" rows="8"
-                  class="w-full rounded-xl bg-slate-50 border border-slate-200 p-3 font-mono text-xs text-slate-900 focus:border-blue-500 focus:ring-0"
-                  placeholder="# Target microservice code&#10;import os&#10;def handler():&#10;    return {'status': 'active'}"></textarea>
+      <div class="p-3">
+        <textarea id="modal-code-text" rows="6"
+                  class="w-full rounded-xl bg-slate-50 border border-slate-200 p-2.5 font-mono text-xs text-slate-800 focus:ring-0 focus:border-slate-400"
+                  placeholder="# Paste Python workload&#10;def process_transaction(user_id):&#10;    pass"></textarea>
       </div>
-      <div class="p-3.5 border-t border-slate-200 flex items-center justify-end gap-2 bg-slate-50">
-        <button onclick="closeCustomCodeModal()" class="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-500 hover:text-slate-900">Cancel</button>
-        <button onclick="attachCodeSnippet()" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs font-mono transition">
-          Attach Code
-        </button>
+      <div class="p-3 border-t border-slate-100 flex justify-end gap-2 bg-slate-50">
+        <button onclick="toggleCodeModal()" class="px-3 py-1 rounded-md text-xs text-slate-500 hover:text-slate-800">Cancel</button>
+        <button onclick="saveAttachedCode()" class="px-3 py-1 rounded-md bg-slate-900 text-white font-medium text-xs">Attach</button>
       </div>
     </div>
   </div>
 
 
-  <!-- ================= JAVASCRIPT COPILOT CONTROLLER ================= -->
+  <!-- ================= JAVASCRIPT CONTROLLER ================= -->
   <script>
-    let attachedCodeSnippet = null;
-    let isProcessing = false;
-    let isRecordingVoice = false;
+    let attachedCode = null;
+    let isBusy = false;
     let mediaRecorder = null;
     let audioChunks = [];
+    let isRecording = false;
 
-    // Auto-resize textarea
-    const inputEl = document.getElementById('copilot-input');
-    if (inputEl) {
-      inputEl.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-      });
-    }
+    // Auto-grow textarea
+    const input = document.getElementById('prompt-input');
+    input.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
 
-    function handleInputKeyDown(e) {
+    function handleKeyDown(e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        submitCopilotMessage();
+        submitMessage();
       }
     }
 
-    // Toggle Sidebar
-    function toggleSidebar() {
-      const sidebar = document.getElementById('copilot-sidebar');
-      const backdrop = document.getElementById('sidebar-backdrop');
-      if (sidebar.classList.contains('-translate-x-full')) {
-        sidebar.classList.remove('-translate-x-full');
+    function toggleHistoryDrawer() {
+      const drawer = document.getElementById('history-drawer');
+      const backdrop = document.getElementById('history-backdrop');
+      if (drawer.classList.contains('translate-x-full')) {
+        drawer.classList.remove('translate-x-full');
         backdrop.classList.remove('hidden');
+        loadRecentMissions();
       } else {
-        sidebar.classList.add('-translate-x-full');
+        drawer.classList.add('translate-x-full');
         backdrop.classList.add('hidden');
       }
     }
 
-    // Toggle Terminal Drawer
-    function toggleTerminalDrawer() {
-      const drawer = document.getElementById('terminal-drawer');
-      if (drawer.classList.contains('translate-y-full')) {
-        drawer.classList.remove('translate-y-full');
-      } else {
-        drawer.classList.add('translate-y-full');
+    function toggleCodeModal() {
+      document.getElementById('code-modal').classList.toggle('hidden');
+    }
+
+    function saveAttachedCode() {
+      const val = document.getElementById('modal-code-text').value.trim();
+      if (val) {
+        attachedCode = val;
+        document.getElementById('btn-code').classList.add('text-blue-600', 'bg-blue-50');
       }
+      toggleCodeModal();
     }
 
-    function logTerminal(msg, color = 'text-slate-700') {
-      const consoleEl = document.getElementById('terminal-stream-console');
-      if (!consoleEl) return;
-      const ts = new Date().toISOString().substring(11, 19);
-      const row = document.createElement('div');
-      row.className = color;
-      row.innerText = `[${ts}] ${msg}`;
-      consoleEl.appendChild(row);
-      consoleEl.scrollTop = consoleEl.scrollHeight;
+    function resetConversation() {
+      document.getElementById('chat-thread').innerHTML = '';
+      document.getElementById('welcome-state').classList.remove('hidden');
+      attachedCode = null;
+      document.getElementById('btn-code').classList.remove('text-blue-600', 'bg-blue-50');
+      input.value = '';
+      input.style.height = 'auto';
     }
 
-    function clearTerminalOutput() {
-      document.getElementById('terminal-stream-console').innerHTML =
-        '<div class="text-slate-500">[TERMINAL_CLEARED] Ready.</div>';
+    function submitPrompt(text) {
+      input.value = text;
+      submitMessage();
     }
 
-    function copyTerminalOutput() {
-      const text = document.getElementById('terminal-stream-console').innerText;
-      navigator.clipboard.writeText(text);
-      alert('Terminal output copied to clipboard.');
-    }
-
-    // Custom Code Modal
-    function openCustomCodeModal() {
-      document.getElementById('custom-code-modal').classList.remove('hidden');
-    }
-    function closeCustomCodeModal() {
-      document.getElementById('custom-code-modal').classList.add('hidden');
-    }
-    function attachCodeSnippet() {
-      const code = document.getElementById('modal-code-input').value.trim();
-      if (code) {
-        attachedCodeSnippet = code;
-        document.getElementById('btn-code-attach').classList.add('text-blue-600', 'bg-blue-50');
-        document.getElementById('copilot-input').placeholder = 'Code attached. Enter instructions (e.g. "Audit this code for vulnerabilities")...';
-      }
-      closeCustomCodeModal();
-    }
-
-    // Preset Prompts
-    function sendPresetPrompt(promptText) {
-      document.getElementById('copilot-input').value = promptText;
-      submitCopilotMessage();
-    }
-
-    // Voice Dictation (Whisper)
-    async function toggleVoiceRecording() {
-      const btn = document.getElementById('btn-voice-dictate');
-      if (!isRecordingVoice) {
+    // Voice dictation
+    async function toggleVoice() {
+      const btn = document.getElementById('btn-voice');
+      if (!isRecording) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
           mediaRecorder = new MediaRecorder(stream);
           audioChunks = [];
           mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
           mediaRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            const formData = new FormData();
-            formData.append('file', audioBlob, 'voice.wav');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-sm"></i>';
+            const blob = new Blob(audioChunks, { type: 'audio/wav' });
+            const fd = new FormData();
+            fd.append('file', blob, 'command.wav');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i>';
             try {
-              const res = await fetch('/api/voice-command', { method: 'POST', body: formData });
+              const res = await fetch('/api/voice-command', { method: 'POST', body: fd });
               const data = await res.json();
               if (data.transcribed_text) {
-                document.getElementById('copilot-input').value = data.transcribed_text;
+                input.value = data.transcribed_text;
               }
             } catch (err) {
-              logTerminal(`[VOICE_ERROR] ${err}`, 'text-rose-400');
+              console.error(err);
             } finally {
-              btn.innerHTML = '<i class="fa-solid fa-microphone text-sm"></i>';
+              btn.innerHTML = '<i class="fa-solid fa-microphone text-xs"></i>';
             }
           };
           mediaRecorder.start();
-          isRecordingVoice = true;
-          btn.classList.add('text-rose-600', 'bg-rose-50', 'animate-pulse');
-        } catch (err) {
-          alert('Microphone access denied or unavailable: ' + err);
+          isRecording = true;
+          btn.classList.add('text-rose-600', 'animate-pulse');
+        } catch (e) {
+          alert('Microphone not available: ' + e);
         }
       } else {
         if (mediaRecorder) mediaRecorder.stop();
-        isRecordingVoice = false;
-        btn.classList.remove('text-rose-600', 'bg-rose-50', 'animate-pulse');
+        isRecording = false;
+        btn.classList.remove('text-rose-600', 'animate-pulse');
       }
     }
 
-    // Clear Chat
-    function clearChatThread() {
-      document.getElementById('chat-messages-stream').innerHTML = '';
-      document.getElementById('welcome-hero-card').classList.remove('hidden');
+    // 1-Click Chaos
+    async function runChaosTest() {
+      try {
+        const res = await fetch('/api/chaos-test', { method: 'POST' });
+        const data = await res.json();
+        alert(`1-Click Chaos Simulation Dispatched!\nTask ID: ${data.task_id}\nTarget: Path Jail, Memory Ceiling, Air-gap.`);
+        loadRecentMissions();
+      } catch (err) {
+        alert('Chaos test error: ' + err);
+      }
     }
 
-    function startNewSession() {
-      clearChatThread();
-      attachedCodeSnippet = null;
-      document.getElementById('btn-code-attach').classList.remove('text-blue-600', 'bg-blue-50');
-      document.getElementById('copilot-input').placeholder = 'Ask AegisSentinel to audit a service, simulate a breach, or paste code...';
-    }
+    // Send Message
+    async function submitMessage() {
+      const text = input.value.trim();
+      if (!text || isBusy) return;
 
-    // Main Message Submission
-    async function submitCopilotMessage() {
-      const input = document.getElementById('copilot-input');
-      const message = input.value.trim();
-      if (!message || isProcessing) return;
+      isBusy = true;
+      document.getElementById('btn-send').disabled = true;
+      document.getElementById('welcome-state').classList.add('hidden');
 
-      isProcessing = true;
-      document.getElementById('btn-submit-message').disabled = true;
-      document.getElementById('welcome-hero-card').classList.add('hidden');
-
-      // Append User Bubble
-      appendUserMessage(message, attachedCodeSnippet);
+      // User Bubble
+      appendUserMessage(text, attachedCode);
       input.value = '';
       input.style.height = 'auto';
 
-      // Append Copilot Placeholder with Stepper
-      const responseCardId = 'reply-' + Math.random().toString(36).substring(2, 9);
-      appendCopilotLoadingCard(responseCardId);
-
-      logTerminal(`[COPILOT_QUERY] Operator Directive: "${message}"`, 'text-blue-700');
+      // Copilot Loading Card
+      const cardId = 'card-' + Math.random().toString(36).substring(2, 9);
+      appendCopilotLoading(cardId);
 
       try {
-        const payload = {
-          message: message,
-          code_snippet: attachedCodeSnippet,
-          session_id: 'session-' + Date.now()
-        };
-
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({
+            message: text,
+            code_snippet: attachedCode,
+            session_id: 'session-' + Date.now()
+          })
         });
-
         const data = await res.json();
 
-        // Animate Multi-Model Stepper
-        animateStepper(responseCardId, () => {
-          renderFinishedCopilotCard(responseCardId, data);
-          confetti({ particleCount: 35, spread: 40, origin: { y: 0.7 } });
+        // Animate Step Progression
+        animatePipeline(cardId, () => {
+          renderFinishedCard(cardId, data);
+          confetti({ particleCount: 30, spread: 35, origin: { y: 0.7 } });
         });
 
       } catch (err) {
-        logTerminal(`[COPILOT_ERROR] ${err}`, 'text-rose-700');
-        renderErrorCard(responseCardId, err.message);
+        renderErrorCard(cardId, err.message);
       } finally {
-        isProcessing = false;
-        document.getElementById('btn-submit-message').disabled = false;
-        attachedCodeSnippet = null;
-        document.getElementById('btn-code-attach').classList.remove('text-blue-600', 'bg-blue-50');
+        isBusy = false;
+        document.getElementById('btn-send').disabled = false;
+        attachedCode = null;
+        document.getElementById('btn-code').classList.remove('text-blue-600', 'bg-blue-50');
       }
     }
 
-    // Append User Message to Thread
     function appendUserMessage(text, codeSnippet) {
-      const container = document.getElementById('chat-messages-stream');
+      const thread = document.getElementById('chat-thread');
       const div = document.createElement('div');
-      div.className = 'flex justify-end gap-2.5';
+      div.className = 'flex justify-end';
 
-      let codeHtml = '';
+      let codeBlock = '';
       if (codeSnippet) {
-        codeHtml = `
-          <div class="mt-2 p-2 rounded-lg bg-slate-900 font-mono text-xs text-slate-200 overflow-x-auto max-h-36">
+        codeBlock = `
+          <div class="mt-2 p-2 rounded-lg bg-slate-100 border border-slate-200 font-mono text-xs text-slate-800 overflow-x-auto max-h-32">
             <pre class="whitespace-pre">${escapeHtml(codeSnippet)}</pre>
           </div>
         `;
       }
 
       div.innerHTML = `
-        <div class="max-w-xl rounded-2xl bg-blue-600 p-3.5 text-white shadow-xs space-y-1">
-          <div class="text-[11px] font-medium opacity-80 mb-0.5">Operator</div>
+        <div class="max-w-xl rounded-2xl bg-slate-100 border border-slate-200/60 p-3.5 text-slate-900 space-y-1">
           <div class="text-sm leading-relaxed break-words">${escapeHtml(text)}</div>
-          ${codeHtml}
+          ${codeBlock}
         </div>
       `;
-      container.appendChild(div);
-      scrollChatToBottom();
+      thread.appendChild(div);
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
-    // Append Loading State with Minimalist Timeline Stepper
-    function appendCopilotLoadingCard(cardId) {
-      const container = document.getElementById('chat-messages-stream');
+    function appendCopilotLoading(cardId) {
+      const thread = document.getElementById('chat-thread');
       const div = document.createElement('div');
       div.id = cardId;
-      div.className = 'flex gap-2.5';
+      div.className = 'bg-white rounded-2xl border border-slate-200 p-5 space-y-3 shadow-xs';
       div.innerHTML = `
-        <div class="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
-          <i class="fa-solid fa-shield-halved"></i>
+        <div class="flex items-center justify-between text-xs text-slate-500">
+          <span class="font-medium text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-spinner fa-spin text-slate-600"></i>
+            Analyzing workload in air-gapped enclave...
+          </span>
+          <span class="font-mono text-[10px]">gVisor runsc</span>
         </div>
-        <div class="flex-1 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs space-y-3">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 text-xs">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-blue-500 status-pulse"></span>
-              <span class="font-semibold text-slate-900">SecOps Copilot Analysis</span>
-            </div>
-            <span class="font-mono text-slate-400">gVisor Sandbox</span>
-          </div>
-
-          <!-- Minimalist Timeline Stepper -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
-            <div id="${cardId}-step-1" class="p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-500 flex items-center gap-2">
-              <i id="${cardId}-icon-1" class="fa-solid fa-spinner fa-spin text-blue-600"></i>
-              <span class="truncate">1. Red Strike</span>
-            </div>
-
-            <div id="${cardId}-step-2" class="p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-400 flex items-center gap-2">
-              <i id="${cardId}-icon-2" class="fa-solid fa-clock text-slate-400"></i>
-              <span class="truncate">2. Blue Patch</span>
-            </div>
-
-            <div id="${cardId}-step-3" class="p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-400 flex items-center gap-2">
-              <i id="${cardId}-icon-3" class="fa-solid fa-clock text-slate-400"></i>
-              <span class="truncate">3. Sandbox Run</span>
-            </div>
-
-            <div id="${cardId}-step-4" class="p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-400 flex items-center gap-2">
-              <i id="${cardId}-icon-4" class="fa-solid fa-clock text-slate-400"></i>
-              <span class="truncate">4. Notary Seal</span>
-            </div>
-          </div>
+        <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
+          <span id="${cardId}-s1" class="text-slate-800 font-medium">1. Red Strike &rarr;</span>
+          <span id="${cardId}-s2">2. Blue Patch &rarr;</span>
+          <span id="${cardId}-s3">3. Verification &rarr;</span>
+          <span id="${cardId}-s4">4. Signed Seal</span>
         </div>
       `;
-      container.appendChild(div);
-      scrollChatToBottom();
+      thread.appendChild(div);
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
-    // Step Animation
-    function animateStepper(cardId, onComplete) {
+    function animatePipeline(cardId, done) {
       setTimeout(() => {
-        setStepDone(cardId, 1);
-        setStepRunning(cardId, 2);
-        logTerminal('[MAKER] Blue Agent (Qwen-3.8) synthesizing invariant hotpatch...', 'text-blue-700');
-      }, 400);
-
+        const s2 = document.getElementById(`${cardId}-s2`);
+        if (s2) s2.className = 'text-slate-800 font-medium';
+      }, 350);
       setTimeout(() => {
-        setStepDone(cardId, 2);
-        setStepRunning(cardId, 3);
-        logTerminal('[SANDBOX] Validating AST & cgroups limits inside gVisor runsc...', 'text-slate-700');
-      }, 800);
-
+        const s3 = document.getElementById(`${cardId}-s3`);
+        if (s3) s3.className = 'text-slate-800 font-medium';
+      }, 700);
       setTimeout(() => {
-        setStepDone(cardId, 3);
-        setStepRunning(cardId, 4);
-        logTerminal('[NOTARY] Computing Ed25519 signature & appending SHA-256 chain hash...', 'text-emerald-700');
-      }, 1200);
-
-      setTimeout(() => {
-        setStepDone(cardId, 4);
-        onComplete();
-      }, 1500);
+        const s4 = document.getElementById(`${cardId}-s4`);
+        if (s4) s4.className = 'text-slate-800 font-medium';
+      }, 1050);
+      setTimeout(() => done(), 1300);
     }
 
-    function setStepRunning(cardId, stepNum) {
-      const el = document.getElementById(`${cardId}-step-${stepNum}`);
-      const icon = document.getElementById(`${cardId}-icon-${stepNum}`);
-      if (el) {
-        el.className = 'p-2 rounded-lg border border-blue-300 bg-blue-50 text-blue-700 flex items-center gap-2';
-      }
-      if (icon) {
-        icon.className = 'fa-solid fa-spinner fa-spin text-blue-600';
-      }
-    }
-
-    function setStepDone(cardId, stepNum) {
-      const el = document.getElementById(`${cardId}-step-${stepNum}`);
-      const icon = document.getElementById(`${cardId}-icon-${stepNum}`);
-      if (el) {
-        el.className = 'p-2 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 flex items-center gap-2';
-      }
-      if (icon) {
-        icon.className = 'fa-solid fa-circle-check text-emerald-600';
-      }
-    }
-
-    // Render Finished Response Card
-    function renderFinishedCopilotCard(cardId, data) {
+    function renderFinishedCard(cardId, data) {
       const card = document.getElementById(cardId);
       if (!card) return;
 
-      const scenarioMap = {
+      const scenarioTitles = {
         'SUPPLY_CHAIN_LEAK': 'Supply-Chain Secret Exfiltration',
         'FORK_MEMORY_EXHAUSTION': 'Memory Fork Bomb DoS',
-        'FINANCIAL_INVARIANT_BUG': 'Financial Precision Invariant Drift'
+        'FINANCIAL_INVARIANT_BUG': 'Financial Invariant Precision Drift'
       };
-      const friendlyScenario = scenarioMap[data.scenario] || data.scenario.replace(/_/g, ' ');
+      const title = scenarioTitles[data.scenario] || data.scenario.replace(/_/g, ' ');
 
-      const inner = card.querySelector('.bg-white');
-      inner.innerHTML = `
-        <!-- Header & Badges -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            <div>
-              <span class="text-sm font-semibold text-slate-900">${escapeHtml(friendlyScenario)}</span>
-              <span class="block text-[11px] font-mono text-slate-500 truncate max-w-xs" title="${escapeHtml(data.mission_id)}">Mission: ${escapeHtml(data.mission_id)}</span>
-            </div>
+      card.innerHTML = `
+        <!-- Top Status Bar -->
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <h2 class="text-sm font-semibold text-slate-900">${escapeHtml(title)}</h2>
+            <div class="text-[11px] font-mono text-slate-400">Mission: ${escapeHtml(data.mission_id)}</div>
           </div>
-          <div class="flex items-center gap-1.5 shrink-0">
-            <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-rose-50 text-rose-700 border border-rose-200 font-medium">
+          <div class="flex items-center gap-1.5">
+            <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-rose-50 text-rose-700 font-medium border border-rose-200">
               ${escapeHtml(data.cvss_score.split(' - ')[0])}
             </span>
-            <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
-              Verified Safe
+            <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-emerald-50 text-emerald-700 font-medium border border-emerald-200">
+              Immunized
             </span>
           </div>
         </div>
 
-        <!-- Clean Formatted Summary -->
-        <div class="text-xs text-slate-700 leading-relaxed space-y-1.5">
+        <!-- Verdict Text -->
+        <div class="text-xs text-slate-700 leading-relaxed">
           <p>${escapeHtml(data.reply).replace(/### /g, '<b>').replace(/\n\n/g, '<br/>').replace(/- \*\*(.*?)\*\*/g, '&bull; <b>$1</b>')}</p>
         </div>
 
-        <!-- Side-by-Side Red vs Blue Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-          <!-- Red Attack -->
-          <div class="rounded-xl border border-red-200 bg-red-50/40 p-3 space-y-1.5">
-            <div class="flex items-center justify-between text-[11px] font-mono font-medium text-red-800">
-              <span class="flex items-center gap-1.5"><i class="fa-solid fa-crosshairs"></i> Red Strike</span>
-              <span class="text-[10px] text-red-600">DeepSeek-V4.1</span>
+        <!-- Red & Blue Analysis Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div class="rounded-xl border border-rose-200/80 bg-rose-50/40 p-3 space-y-1">
+            <div class="flex items-center justify-between text-[11px] font-mono font-medium text-rose-900">
+              <span>Red Team Strike</span>
+              <span class="text-[10px] text-rose-600">DeepSeek-V4.1</span>
             </div>
-            <p class="text-xs text-slate-800 leading-normal break-words">${escapeHtml(data.red_findings)}</p>
+            <p class="text-xs text-slate-700 leading-normal break-words">${escapeHtml(data.red_findings)}</p>
           </div>
 
-          <!-- Blue Patch -->
-          <div class="rounded-xl border border-emerald-200 bg-emerald-50/40 p-3 space-y-1.5">
-            <div class="flex items-center justify-between text-[11px] font-mono font-medium text-emerald-800">
-              <span class="flex items-center gap-1.5"><i class="fa-solid fa-code-merge"></i> Blue Hotpatch</span>
+          <div class="rounded-xl border border-emerald-200/80 bg-emerald-50/40 p-3 space-y-1">
+            <div class="flex items-center justify-between text-[11px] font-mono font-medium text-emerald-900">
+              <span>Blue Remediation</span>
               <span class="text-[10px] text-emerald-600">Qwen-3.8</span>
             </div>
-            <p class="text-xs text-slate-800 leading-normal break-words">${escapeHtml(data.blue_patch)}</p>
-          </div>
-        </div>
-
-        <!-- Cryptographic Receipt Row -->
-        <div class="rounded-xl border border-slate-200 bg-slate-50 p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
-          <div class="space-y-0.5 truncate max-w-sm">
-            <div class="text-[10px] text-slate-500 uppercase tracking-wide">Ed25519 Hardware Signature:</div>
-            <div class="text-slate-800 truncate text-[11px]" title="${escapeHtml(data.ed25519_signature)}"><code>${escapeHtml(data.ed25519_signature.slice(0, 36))}...</code></div>
-          </div>
-          <div class="flex items-center gap-3 shrink-0 text-slate-600 text-[11px]">
-            <span>Latency: <b class="text-slate-900">${data.duration_ms}ms</b></span>
-            <span>Peak RAM: <b class="text-slate-900">${data.memory_peak_mb}MB</b></span>
+            <p class="text-xs text-slate-700 leading-normal break-words">${escapeHtml(data.blue_patch)}</p>
           </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="pt-1 flex flex-wrap items-center justify-between gap-2">
+        <div class="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100">
           <div class="flex items-center gap-2">
             <a href="${data.pdf_report_url}" target="_blank"
-               class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-mono font-medium transition flex items-center gap-1.5 shadow-xs">
-              <i class="fa-solid fa-file-pdf"></i>
-              <span>Download PDF Report</span>
+               class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-medium transition flex items-center gap-1.5 shadow-xs">
+              <i class="fa-solid fa-file-pdf text-[11px]"></i>
+              <span>Download Audit Certificate (PDF)</span>
             </a>
 
-            <button onclick="playVoiceBriefing('${escapeHtml(data.mission_id)}')"
-                    class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 text-xs font-mono transition flex items-center gap-1.5 border border-slate-200">
-              <i class="fa-solid fa-volume-high text-blue-600"></i>
+            <button onclick="playVoice('${escapeHtml(data.mission_id)}')"
+                    class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 text-xs font-mono border border-slate-200 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-volume-high text-[11px]"></i>
               <span>Audio Briefing</span>
             </button>
           </div>
 
-          <button onclick="toggleTerminalDrawer()" class="text-xs font-mono text-slate-500 hover:text-slate-900 flex items-center gap-1.5">
-            <i class="fa-solid fa-terminal text-blue-600"></i>
-            <span>Sandbox Log</span>
-          </button>
+          <!-- Enclave Signature Details Accordion -->
+          <details class="text-[11px] font-mono text-slate-500">
+            <summary class="cursor-pointer hover:text-slate-800 select-none">Enclave Attestation</summary>
+            <div class="mt-1.5 p-2 rounded bg-slate-50 border border-slate-200 space-y-1 text-[10px]">
+              <div class="truncate max-w-xs" title="${escapeHtml(data.ed25519_signature)}">Sig: <code>${escapeHtml(data.ed25519_signature.slice(0, 32))}...</code></div>
+              <div>Latency: ${data.duration_ms}ms &bull; Peak RAM: ${data.memory_peak_mb}MB</div>
+            </div>
+          </details>
         </div>
       `;
-      scrollChatToBottom();
-      loadMissionHistory();
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
-    function renderErrorCard(cardId, errorMsg) {
+    function renderErrorCard(cardId, msg) {
       const card = document.getElementById(cardId);
       if (!card) return;
-      card.querySelector('.bg-white').innerHTML = `
-        <div class="text-xs text-rose-600 space-y-1">
-          <div class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation"></i> Security Execution Error</div>
-          <div>${escapeHtml(errorMsg)}</div>
+      card.innerHTML = `
+        <div class="text-xs text-rose-700 space-y-1">
+          <div class="font-semibold flex items-center gap-1"><i class="fa-solid fa-circle-exclamation"></i> Analysis Error</div>
+          <div>${escapeHtml(msg)}</div>
         </div>
       `;
     }
 
-    // Play Voice Alert Briefing
-    async function playVoiceBriefing(missionId) {
-      logTerminal(`[AUDIO_SYNTHESIS] Synthesizing executive voice alert via qwen3-tts...`, 'text-blue-700');
+    async function playVoice(missionId) {
       try {
         const res = await fetch('/api/voice-alert', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ text: `Alert: Security vulnerability in mission ${missionId} quarantined and neutralized.` })
+          body: new URLSearchParams({ text: `Security mission ${missionId} verified and neutralized.` })
         });
         const blob = await res.blob();
         const audio = new Audio(URL.createObjectURL(blob));
-        audio.play().catch(e => logTerminal('[AUDIO_NOTICE] Autoplay restricted by browser.', 'text-slate-500'));
-        logTerminal(`[AUDIO_PLAYING] Vocal containment briefing playing.`, 'text-emerald-700');
+        audio.play().catch(e => console.warn(e));
       } catch (err) {
-        logTerminal(`[AUDIO_ERR] ${err}`, 'text-rose-700');
+        console.error(err);
       }
     }
 
-    // 1-Click Chaos Blast Test
-    async function runChaosTest() {
-      logTerminal('[CHAOS_PROBE] Initiating 1-Click Chaos Sandbox Injection...', 'text-amber-700');
+    async function loadRecentMissions() {
       try {
-        const res = await fetch('/api/chaos-test', { method: 'POST' });
+        const res = await fetch('/api/missions?limit=8');
         const data = await res.json();
-        logTerminal(`[CHAOS_DISPATCHED] Task ID: ${data.task_id}. Probing file traversal, PIDs, and network.`, 'text-emerald-700');
-        alert(`1-Click Chaos Probe Dispatched!\n\nTask ID: ${data.task_id}\nVectors Tested: Path Jail Traversal, Recursive Fork Bomb, Network Socket Exfiltration.`);
-      } catch (err) {
-        logTerminal(`[CHAOS_ERROR] ${err}`, 'text-rose-700');
-      }
-    }
-
-    // Load Mission History
-    async function loadMissionHistory() {
-      try {
-        const res = await fetch('/api/missions?limit=6');
-        const data = await res.json();
-        const list = document.getElementById('mission-history-list');
+        const list = document.getElementById('drawer-mission-list');
         if (data.missions && data.missions.length > 0) {
           list.innerHTML = '';
           data.missions.forEach(m => {
             const row = document.createElement('div');
-            row.className = 'p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition gap-2';
+            row.className = 'p-2 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-between cursor-pointer transition';
             row.onclick = () => window.open(`/api/report/pdf/${m.mission_id}`, '_blank');
             row.innerHTML = `
-              <span class="truncate max-w-[130px]" title="${escapeHtml(m.task_slug)}">${escapeHtml(m.task_slug)}</span>
-              <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] shrink-0 font-medium">${escapeHtml(m.status)}</span>
+              <span class="truncate max-w-[150px]" title="${escapeHtml(m.task_slug)}">${escapeHtml(m.task_slug)}</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-semibold">${escapeHtml(m.status)}</span>
             `;
             list.appendChild(row);
           });
         }
       } catch (e) {
         // quiet fallback
-      }
-    }
-
-    function scrollChatToBottom() {
-      const container = document.getElementById('chat-thread-container');
-      if (container) {
-        container.scrollTop = container.scrollHeight;
       }
     }
 
@@ -892,9 +589,6 @@
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
-
-    // Initialize History on Load
-    loadMissionHistory();
   </script>
 
 </body>
