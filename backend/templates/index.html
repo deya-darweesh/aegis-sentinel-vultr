@@ -1,34 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AegisSentinel — Autonomous AI SecOps Copilot & Verification Enclave</title>
+  <title>AegisSentinel — Autonomous AI SecOps Copilot</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
-          colors: {
-            midnight: {
-              950: '#070a12',
-              900: '#0b0f19',
-              850: '#111726',
-              800: '#182032',
-              700: '#232f48',
-            },
-            accent: {
-              cyan: '#06b6d4',
-              sky: '#0ea5e9',
-              blue: '#3b82f6',
-              emerald: '#10b981',
-              rose: '#f43f5e',
-              amber: '#f59e0b',
-            }
-          },
           fontFamily: {
             sans: ['"Inter"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
             mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
@@ -47,8 +29,8 @@
 
   <style>
     body {
-      background-color: #070a12;
-      color: #e2e8f0;
+      background-color: #f8fafc;
+      color: #0f172a;
       font-family: 'Inter', sans-serif;
     }
 
@@ -58,31 +40,14 @@
       height: 5px;
     }
     ::-webkit-scrollbar-track {
-      background: #0b0f19;
+      background: #f1f5f9;
     }
     ::-webkit-scrollbar-thumb {
-      background: #1e293b;
+      background: #cbd5e1;
       border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
-    }
-
-    /* Glass Surfaces */
-    .glass-panel {
-      background: rgba(17, 23, 38, 0.75);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-    }
-
-    .glass-card {
-      background: #0f1627;
-      border: 1px solid #1e293b;
-      transition: all 0.2s ease-in-out;
-    }
-    .glass-card:hover {
-      border-color: #38bdf8;
-      box-shadow: 0 4px 20px -2px rgba(14, 165, 233, 0.15);
+      background: #94a3b8;
     }
 
     /* Pulse animation */
@@ -96,65 +61,65 @@
   </style>
 </head>
 
-<body class="h-screen flex flex-col overflow-hidden text-slate-200 antialiased selection:bg-cyan-500/20 selection:text-cyan-300">
+<body class="h-screen flex flex-col overflow-hidden text-slate-800 antialiased bg-slate-50">
 
-  <!-- ================= TOP EXECUTIVE NAVIGATION BAR ================= -->
-  <header class="h-14 border-b border-slate-800/80 bg-midnight-900/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shrink-0 z-30">
+  <!-- ================= TOP NAVIGATION BAR (MINIMALIST LIGHT) ================= -->
+  <header class="h-14 border-b border-slate-200 bg-white/95 backdrop-blur px-4 sm:px-6 flex items-center justify-between shrink-0 z-30 shadow-xs">
     <!-- Left: Brand & Mobile Sidebar Toggle -->
     <div class="flex items-center gap-3">
-      <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white p-1.5 rounded-lg border border-slate-800 hover:bg-slate-800/60 transition">
+      <button onclick="toggleSidebar()" class="md:hidden text-slate-500 hover:text-slate-900 p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 transition">
         <i class="fa-solid fa-bars text-sm"></i>
       </button>
 
       <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs">
           <i class="fa-solid fa-shield-halved text-sm"></i>
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-sm font-semibold tracking-tight text-white">AegisSentinel</span>
-            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-400 border border-cyan-800/60 font-medium">SecOps Copilot</span>
+            <span class="text-sm font-semibold tracking-tight text-slate-900">AegisSentinel</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-medium">SecOps Copilot</span>
           </div>
-          <div class="text-[11px] text-slate-400 hidden sm:block">Autonomous AI Security &bull; Blast Radius Zero</div>
+          <div class="text-[11px] text-slate-500 hidden sm:block">Vultr Agent Rush 2026 &bull; Blast Radius Zero</div>
         </div>
       </div>
     </div>
 
     <!-- Center: Enclave Status Badges -->
     <div class="hidden lg:flex items-center gap-3 text-xs font-mono">
-      <div class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 status-pulse"></span>
-        <span class="text-slate-400">Enclave:</span>
-        <span class="text-slate-200 font-semibold">{{ RUNTIME_ENGINE }}</span>
+      <div class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 status-pulse"></span>
+        <span class="text-slate-500">Enclave:</span>
+        <span class="text-slate-800 font-medium">{{ RUNTIME_ENGINE }}</span>
       </div>
-      <div class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 flex items-center gap-2">
-        <i class="fa-solid fa-server text-cyan-400 text-[10px]"></i>
-        <span class="text-slate-400">Node:</span>
-        <span class="text-slate-200">Vultr Atlanta (VX1)</span>
+      <div class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 flex items-center gap-2">
+        <i class="fa-solid fa-server text-blue-600 text-[10px]"></i>
+        <span class="text-slate-500">Node:</span>
+        <span class="text-slate-800">Vultr VX1</span>
       </div>
-      <div class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 flex items-center gap-2">
-        <i class="fa-solid fa-key text-amber-400 text-[10px]"></i>
-        <span class="text-slate-400">Signer:</span>
-        <span class="text-slate-200">{{ PUBLIC_KEY }}...</span>
+      <div class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 flex items-center gap-2">
+        <i class="fa-solid fa-key text-amber-600 text-[10px]"></i>
+        <span class="text-slate-500">Signer:</span>
+        <span class="text-slate-800">{{ PUBLIC_KEY }}...</span>
       </div>
     </div>
 
     <!-- Right: Action Controls -->
     <div class="flex items-center gap-2">
       <button onclick="runChaosTest()" id="btn-chaos-top"
-              class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-mono font-medium transition">
-        <i class="fa-solid fa-bolt text-amber-400"></i>
-        <span>1-Click Chaos Test</span>
+              class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-mono font-medium transition">
+        <i class="fa-solid fa-bolt text-amber-600"></i>
+        <span>1-Click Containment Moment</span>
       </button>
 
       <button onclick="toggleTerminalDrawer()" id="btn-toggle-terminal"
-              class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-mono transition">
-        <i class="fa-solid fa-terminal text-cyan-400"></i>
+              class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-mono transition">
+        <i class="fa-solid fa-terminal text-blue-600"></i>
         <span class="hidden sm:inline">Terminal</span>
       </button>
 
       <button onclick="clearChatThread()" title="Clear Chat Thread"
-              class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent hover:border-slate-800 transition">
+              class="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-transparent hover:border-slate-200 transition">
         <i class="fa-solid fa-rotate-right text-xs"></i>
       </button>
     </div>
@@ -165,58 +130,58 @@
   <div class="flex-1 flex overflow-hidden relative">
 
     <!-- BACKDROP FOR MOBILE SIDEBAR -->
-    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-20 hidden md:hidden"></div>
+    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/30 z-20 hidden md:hidden"></div>
 
     <!-- LEFT SIDEBAR: SESSIONS & THREAT PRESETS -->
     <aside id="copilot-sidebar"
-           class="w-72 bg-midnight-900 border-r border-slate-800/80 flex flex-col shrink-0 absolute md:static inset-y-0 left-0 z-20 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+           class="w-72 bg-white border-r border-slate-200 flex flex-col shrink-0 absolute md:static inset-y-0 left-0 z-20 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
 
       <!-- New Chat Button -->
-      <div class="p-3.5 border-b border-slate-800/80">
+      <div class="p-3.5 border-b border-slate-200">
         <button onclick="startNewSession()"
-                class="w-full py-2.5 px-3.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-medium text-xs flex items-center justify-center gap-2 shadow-sm transition">
+                class="w-full py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs flex items-center justify-center gap-2 shadow-xs transition">
           <i class="fa-solid fa-plus text-xs"></i>
           <span>New Security Audit</span>
         </button>
       </div>
 
       <!-- Quick Threat Scenario Presets -->
-      <div class="p-3.5 border-b border-slate-800/80 space-y-2">
+      <div class="p-3.5 border-b border-slate-200 space-y-2">
         <div class="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
           <span>Target Presets</span>
-          <span class="text-cyan-400">Air-Gapped</span>
+          <span class="text-blue-600 font-medium">Air-Gapped</span>
         </div>
-        <div class="space-y-1.5 text-xs">
-          <button onclick="sendPresetPrompt('Audit our payment gateway service for credential exfiltration and unauthorized network sockets')"
-                  class="w-full text-left p-2 rounded-lg hover:bg-slate-800/60 border border-transparent hover:border-slate-800 transition flex items-center gap-2.5 group">
-            <div class="w-6 h-6 rounded bg-rose-500/10 text-rose-400 flex items-center justify-center text-[10px] font-mono shrink-0">
+        <div class="space-y-1 text-xs">
+          <button onclick="sendPresetPrompt('Audit payment gateway service for credential exfiltration and unauthorized network sockets')"
+                  class="w-full text-left p-2 rounded-lg hover:bg-slate-100 border border-transparent hover:border-slate-200 transition flex items-center gap-2.5 group">
+            <div class="w-6 h-6 rounded bg-rose-50 text-rose-600 flex items-center justify-center text-[10px] shrink-0">
               <i class="fa-solid fa-shield-virus"></i>
             </div>
             <div class="truncate">
-              <div class="text-slate-200 group-hover:text-white font-medium truncate">Payment Gateway</div>
-              <div class="text-[10px] text-slate-400 truncate">CWE-200 Secret Leak</div>
+              <div class="text-slate-800 group-hover:text-blue-600 font-medium truncate">Payment Gateway</div>
+              <div class="text-[10px] text-slate-500 truncate">CWE-200 Secret Leak</div>
             </div>
           </button>
 
           <button onclick="sendPresetPrompt('Detonate recursive memory allocator fork bomb to test cgroups memory ceiling limits')"
-                  class="w-full text-left p-2 rounded-lg hover:bg-slate-800/60 border border-transparent hover:border-slate-800 transition flex items-center gap-2.5 group">
-            <div class="w-6 h-6 rounded bg-amber-500/10 text-amber-400 flex items-center justify-center text-[10px] font-mono shrink-0">
+                  class="w-full text-left p-2 rounded-lg hover:bg-slate-100 border border-transparent hover:border-slate-200 transition flex items-center gap-2.5 group">
+            <div class="w-6 h-6 rounded bg-amber-50 text-amber-600 flex items-center justify-center text-[10px] shrink-0">
               <i class="fa-solid fa-bomb"></i>
             </div>
             <div class="truncate">
-              <div class="text-slate-200 group-hover:text-white font-medium truncate">Memory Fork Bomb</div>
-              <div class="text-[10px] text-slate-400 truncate">CWE-400 Resource Exhaustion</div>
+              <div class="text-slate-800 group-hover:text-blue-600 font-medium truncate">Memory Fork Bomb</div>
+              <div class="text-[10px] text-slate-500 truncate">CWE-400 Resource Exhaustion</div>
             </div>
           </button>
 
           <button onclick="sendPresetPrompt('Audit transaction settlement engine for IEEE 754 decimal rounding drift and broken balance invariants')"
-                  class="w-full text-left p-2 rounded-lg hover:bg-slate-800/60 border border-transparent hover:border-slate-800 transition flex items-center gap-2.5 group">
-            <div class="w-6 h-6 rounded bg-sky-500/10 text-sky-400 flex items-center justify-center text-[10px] font-mono shrink-0">
+                  class="w-full text-left p-2 rounded-lg hover:bg-slate-100 border border-transparent hover:border-slate-200 transition flex items-center gap-2.5 group">
+            <div class="w-6 h-6 rounded bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] shrink-0">
               <i class="fa-solid fa-scale-balanced"></i>
             </div>
             <div class="truncate">
-              <div class="text-slate-200 group-hover:text-white font-medium truncate">Financial Settlement</div>
-              <div class="text-[10px] text-slate-400 truncate">CWE-682 Float Drift</div>
+              <div class="text-slate-800 group-hover:text-blue-600 font-medium truncate">Financial Settlement</div>
+              <div class="text-[10px] text-slate-500 truncate">CWE-682 Float Drift</div>
             </div>
           </button>
         </div>
@@ -226,136 +191,136 @@
       <div class="flex-1 overflow-y-auto p-3.5 space-y-2">
         <div class="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
           <span>Recent Missions</span>
-          <button onclick="loadMissionHistory()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-rotate text-[10px]"></i></button>
+          <button onclick="loadMissionHistory()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-rotate text-[10px]"></i></button>
         </div>
-        <div id="mission-history-list" class="space-y-1.5 text-xs font-mono text-slate-400">
-          <div class="p-2 rounded bg-slate-900/40 border border-slate-800/50 flex items-center justify-between">
+        <div id="mission-history-list" class="space-y-1 text-xs font-mono text-slate-600">
+          <div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
             <span class="truncate">payment-gateway</span>
-            <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 text-[9px]">VERIFIED</span>
+            <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-semibold">VERIFIED</span>
           </div>
-          <div class="p-2 rounded bg-slate-900/40 border border-slate-800/50 flex items-center justify-between">
+          <div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
             <span class="truncate">memory-fork-worker</span>
-            <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 text-[9px]">VERIFIED</span>
+            <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-semibold">VERIFIED</span>
           </div>
         </div>
       </div>
 
       <!-- Cryptographic Ledger Attestation Box -->
-      <div class="p-3.5 border-t border-slate-800/80 bg-slate-950/60 space-y-2">
+      <div class="p-3.5 border-t border-slate-200 bg-slate-50 space-y-1.5">
         <div class="flex items-center justify-between text-[11px] font-mono">
-          <span class="text-slate-400">Audit Ledger Root:</span>
-          <span class="text-amber-400 font-semibold">{{ LATEST_HASH }}...</span>
+          <span class="text-slate-500">Audit Ledger Root:</span>
+          <span class="text-slate-900 font-semibold">{{ LATEST_HASH }}...</span>
         </div>
-        <div class="text-[10px] text-slate-400 flex items-center gap-1.5">
-          <i class="fa-solid fa-certificate text-emerald-400"></i>
-          <span>Hardware Ed25519 Notary Verified</span>
+        <div class="text-[10px] text-slate-500 flex items-center gap-1.5">
+          <i class="fa-solid fa-certificate text-emerald-600"></i>
+          <span>Ed25519 Hardware Notary Certified</span>
         </div>
       </div>
     </aside>
 
 
     <!-- CENTER: CHATGPT-STYLE CONVERSATIONAL CANVAS -->
-    <main class="flex-1 flex flex-col bg-midnight-950 overflow-hidden relative">
+    <main class="flex-1 flex flex-col bg-slate-50 overflow-hidden relative">
 
       <!-- Chat Thread Messages Container -->
-      <div id="chat-thread-container" class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
+      <div id="chat-thread-container" class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-5">
 
         <!-- Welcome Banner / Hero State -->
-        <div id="welcome-hero-card" class="max-w-3xl mx-auto py-8 sm:py-12 text-center space-y-5">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400 text-2xl shadow-xl shadow-cyan-500/10">
-            <i class="fa-solid fa-microchip"></i>
+        <div id="welcome-hero-card" class="max-w-2xl mx-auto py-8 sm:py-12 text-center space-y-4">
+          <div class="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto text-blue-600 text-2xl shadow-xs">
+            <i class="fa-solid fa-shield-halved"></i>
           </div>
           <div>
-            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">AegisSentinel SecOps Copilot</h1>
-            <p class="text-sm text-slate-400 mt-2 max-w-lg mx-auto">
-              Autonomous dual-agent Maker-Breaker arena providing an instant 1-Click Containment Moment. Ask to audit microservices, detonate adversarial exploits, or synthesize cryptographic zero-trust patches.
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900">AegisSentinel SecOps Copilot</h1>
+            <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">
+              Autonomous dual-agent Maker-Breaker arena providing an instant 1-Click Containment Moment. Audit microservices, simulate threats, and verify code invariance.
             </p>
           </div>
 
           <!-- Prompt Suggestions Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left pt-2 max-w-2xl mx-auto">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left pt-2 max-w-xl mx-auto">
             <button onclick="sendPresetPrompt('Audit payment gateway microservice for credentials exfiltration and outbound leaks')"
-                    class="glass-card p-3.5 rounded-xl hover:border-cyan-500/60 transition group">
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-cyan-400 transition flex items-center gap-2">
-                <i class="fa-solid fa-shield-halved text-cyan-400"></i>
+                    class="bg-white border border-slate-200 hover:border-blue-400 p-3.5 rounded-xl shadow-xs hover:shadow-sm transition group">
+              <div class="text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-blue-600"></i>
                 Audit Payment Gateway
               </div>
-              <p class="text-[11px] text-slate-400 mt-1">Intercept supply-chain credential sniffing & verify air-gap.</p>
+              <p class="text-[11px] text-slate-500 mt-1">Intercept supply-chain credential sniffing & verify air-gap.</p>
             </button>
 
             <button onclick="sendPresetPrompt('Detonate recursive fork bomb memory allocator inside container')"
-                    class="glass-card p-3.5 rounded-xl hover:border-cyan-500/60 transition group">
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-amber-400 transition flex items-center gap-2">
-                <i class="fa-solid fa-fire-flame-curved text-amber-400"></i>
+                    class="bg-white border border-slate-200 hover:border-blue-400 p-3.5 rounded-xl shadow-xs hover:shadow-sm transition group">
+              <div class="text-xs font-semibold text-slate-900 group-hover:text-amber-600 transition flex items-center gap-2">
+                <i class="fa-solid fa-fire-flame-curved text-amber-600"></i>
                 Detonate Fork Bomb
               </div>
-              <p class="text-[11px] text-slate-400 mt-1">Verify cgroups memory hard-ceiling (256MB) & SIGKILL interception.</p>
+              <p class="text-[11px] text-slate-500 mt-1">Verify cgroups memory hard-ceiling (256MB) & SIGKILL interception.</p>
             </button>
 
             <button onclick="sendPresetPrompt('Test transaction ledger settlement engine for decimal precision drift')"
-                    class="glass-card p-3.5 rounded-xl hover:border-cyan-500/60 transition group">
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-sky-400 transition flex items-center gap-2">
-                <i class="fa-solid fa-coins text-sky-400"></i>
+                    class="bg-white border border-slate-200 hover:border-blue-400 p-3.5 rounded-xl shadow-xs hover:shadow-sm transition group">
+              <div class="text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition flex items-center gap-2">
+                <i class="fa-solid fa-coins text-blue-600"></i>
                 Test Financial Precision
               </div>
-              <p class="text-[11px] text-slate-400 mt-1">Detect IEEE 754 drift and synthesize fixed-point mathematical invariants.</p>
+              <p class="text-[11px] text-slate-500 mt-1">Detect float drift and synthesize fixed-point invariants.</p>
             </button>
 
             <button onclick="openCustomCodeModal()"
-                    class="glass-card p-3.5 rounded-xl hover:border-cyan-500/60 transition group">
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-emerald-400 transition flex items-center gap-2">
-                <i class="fa-solid fa-code text-emerald-400"></i>
-                Audit Custom Microservice
+                    class="bg-white border border-slate-200 hover:border-blue-400 p-3.5 rounded-xl shadow-xs hover:shadow-sm transition group">
+              <div class="text-xs font-semibold text-slate-900 group-hover:text-emerald-600 transition flex items-center gap-2">
+                <i class="fa-solid fa-code text-emerald-600"></i>
+                Audit Custom Code
               </div>
-              <p class="text-[11px] text-slate-400 mt-1">Paste your Python code to trigger automated Red/Blue dual execution.</p>
+              <p class="text-[11px] text-slate-500 mt-1">Paste Python code to trigger automated Red/Blue dual execution.</p>
             </button>
           </div>
         </div>
 
         <!-- Dynamic Message Stream (Injected by JS) -->
-        <div id="chat-messages-stream" class="max-w-3xl mx-auto space-y-6"></div>
+        <div id="chat-messages-stream" class="max-w-3xl mx-auto space-y-5"></div>
 
       </div>
 
 
-      <!-- BOTTOM PROMPT BAR (CHATGPT-STYLE) -->
-      <div class="p-4 sm:p-5 border-t border-slate-800/80 bg-midnight-900/90 backdrop-blur-md shrink-0">
-        <div class="max-w-3xl mx-auto space-y-2.5">
+      <!-- BOTTOM PROMPT BAR -->
+      <div class="p-3.5 sm:p-4 border-t border-slate-200 bg-white shrink-0">
+        <div class="max-w-3xl mx-auto space-y-2">
 
           <!-- Quick Prompt Chips Row -->
-          <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-mono">
-            <span class="text-slate-500 text-[11px] shrink-0">Prompts:</span>
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-mono">
+            <span class="text-slate-400 text-[11px] shrink-0">Prompts:</span>
             <button onclick="sendPresetPrompt('Audit Payment Gateway for secret exfiltration')"
-                    class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 shrink-0 transition">
+                    class="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition">
               🛡️ Payment Gateway
             </button>
             <button onclick="sendPresetPrompt('Detonate recursive fork bomb to test cgroups ceiling')"
-                    class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 shrink-0 transition">
+                    class="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition">
               💥 Fork Bomb
             </button>
             <button onclick="sendPresetPrompt('Test settlement engine for decimal precision drift')"
-                    class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 shrink-0 transition">
+                    class="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition">
               ⚖️ Precision Drift
             </button>
             <button onclick="runChaosTest()"
-                    class="px-2.5 py-1 rounded-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0 transition">
+                    class="px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 shrink-0 transition">
               ⚡ 1-Click Chaos
             </button>
           </div>
 
           <!-- Input Bar Surface -->
-          <div class="glass-panel rounded-2xl p-2 sm:p-2.5 flex items-end gap-2 focus-within:border-cyan-500/60 transition shadow-lg shadow-black/40">
+          <div class="rounded-xl border border-slate-300 bg-white p-2 flex items-end gap-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition shadow-xs">
             <!-- Code Attachment Button -->
             <button onclick="openCustomCodeModal()" title="Attach Custom Microservice Code"
                     id="btn-code-attach"
-                    class="p-2.5 rounded-xl text-slate-400 hover:text-cyan-400 hover:bg-slate-800/60 transition shrink-0">
+                    class="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 transition shrink-0">
               <i class="fa-solid fa-code text-sm"></i>
             </button>
 
             <!-- Voice Dictation Button (Whisper) -->
             <button onclick="toggleVoiceRecording()" title="Spoken Voice Command"
                     id="btn-voice-dictate"
-                    class="p-2.5 rounded-xl text-slate-400 hover:text-amber-400 hover:bg-slate-800/60 transition shrink-0">
+                    class="p-2 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-slate-100 transition shrink-0">
               <i class="fa-solid fa-microphone text-sm"></i>
             </button>
 
@@ -363,20 +328,16 @@
             <textarea id="copilot-input"
                       rows="1"
                       placeholder="Ask AegisSentinel to audit a service, simulate a breach, or paste code..."
-                      class="flex-1 bg-transparent border-0 text-sm text-white placeholder-slate-500 focus:ring-0 resize-none py-2 px-1 max-h-36 leading-relaxed"
+                      class="flex-1 bg-transparent border-0 text-sm text-slate-900 placeholder-slate-400 focus:ring-0 resize-none py-1.5 px-1 max-h-36 leading-relaxed"
                       onkeydown="handleInputKeyDown(event)"></textarea>
 
             <!-- Send Button -->
             <button onclick="submitCopilotMessage()" id="btn-submit-message"
-                    class="p-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition shrink-0 shadow-md shadow-cyan-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
               <i class="fa-solid fa-arrow-up text-sm"></i>
             </button>
           </div>
 
-          <!-- Bottom Privacy & Safety Caption -->
-          <div class="text-[11px] font-mono text-center text-slate-400">
-            Air-Gapped Quarantine Enclave &bull; Vultr Agent Rush 2026 &bull; Vultr Cloud Compute VX1 &bull; 0 Secrets Leaked
-          </div>
         </div>
       </div>
 
@@ -387,47 +348,47 @@
 
   <!-- ================= COLLAPSIBLE BOTTOM TERMINAL DRAWER ================= -->
   <div id="terminal-drawer"
-       class="border-t border-slate-800 bg-midnight-950 fixed inset-x-0 bottom-0 z-40 transform translate-y-full transition-transform duration-300 ease-in-out shadow-2xl">
+       class="border-t border-slate-200 bg-white fixed inset-x-0 bottom-0 z-40 transform translate-y-full transition-transform duration-300 ease-in-out shadow-lg">
     <!-- Drawer Header -->
-    <div class="h-10 px-4 bg-midnight-900 border-b border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400">
+    <div class="h-9 px-4 bg-slate-100 border-b border-slate-200 flex items-center justify-between text-xs font-mono text-slate-600">
       <div class="flex items-center gap-2">
-        <i class="fa-solid fa-terminal text-cyan-400"></i>
-        <span class="text-slate-200 font-semibold">Live Sandbox Execution Stream</span>
-        <span class="text-[10px] text-slate-400">(gVisor runsc kernel events)</span>
+        <i class="fa-solid fa-terminal text-blue-600"></i>
+        <span class="text-slate-900 font-medium">Sandbox Execution Stream</span>
+        <span class="text-[10px] text-slate-500">(gVisor runsc kernel events)</span>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="copyTerminalOutput()" class="hover:text-white px-2 py-1 rounded hover:bg-slate-800 transition">Copy</button>
-        <button onclick="clearTerminalOutput()" class="hover:text-white px-2 py-1 rounded hover:bg-slate-800 transition">Clear</button>
-        <button onclick="toggleTerminalDrawer()" class="hover:text-white p-1 rounded hover:bg-slate-800 transition"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="copyTerminalOutput()" class="hover:text-slate-900 px-2 py-0.5 rounded hover:bg-slate-200 transition">Copy</button>
+        <button onclick="clearTerminalOutput()" class="hover:text-slate-900 px-2 py-0.5 rounded hover:bg-slate-200 transition">Clear</button>
+        <button onclick="toggleTerminalDrawer()" class="hover:text-slate-900 p-1 rounded hover:bg-slate-200 transition"><i class="fa-solid fa-xmark"></i></button>
       </div>
     </div>
     <!-- Drawer Console Output -->
-    <div id="terminal-stream-console" class="p-4 h-64 overflow-y-auto font-mono text-xs text-slate-300 space-y-1 bg-black/60">
+    <div id="terminal-stream-console" class="p-3 h-60 overflow-y-auto font-mono text-xs text-slate-800 space-y-1 bg-slate-950 text-slate-200">
       <div class="text-slate-400">[SYSTEM_READY] AegisSentinel containment sandbox active. Network air-gap enforced.</div>
     </div>
   </div>
 
 
   <!-- ================= ATTACH CUSTOM CODE MODAL ================= -->
-  <div id="custom-code-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="glass-panel w-full max-w-2xl rounded-2xl overflow-hidden border border-slate-700 shadow-2xl flex flex-col max-h-[90vh]">
-      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+  <div id="custom-code-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-xl rounded-2xl overflow-hidden border border-slate-200 shadow-xl flex flex-col max-h-[90vh]">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-code text-cyan-400"></i>
-          <span class="text-sm font-semibold text-white">Attach Untrusted Microservice Code</span>
+          <i class="fa-solid fa-code text-blue-600"></i>
+          <span class="text-sm font-semibold text-slate-900">Attach Custom Microservice Code</span>
         </div>
-        <button onclick="closeCustomCodeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closeCustomCodeModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="p-4 space-y-3 flex-1 overflow-y-auto">
-        <p class="text-xs text-slate-400">Paste arbitrary Python source code to detonate inside the air-gapped gVisor sandbox:</p>
-        <textarea id="modal-code-input" rows="10"
-                  class="w-full rounded-xl bg-slate-950 border border-slate-800 p-3 font-mono text-xs text-cyan-300 focus:border-cyan-500 focus:ring-0"
-                  placeholder="# Untrusted target code&#10;import os&#10;def handler():&#10;    return {'status': 'active'}"></textarea>
+      <div class="p-4 space-y-2 flex-1 overflow-y-auto">
+        <p class="text-xs text-slate-500">Paste Python code to execute inside the air-gapped sandbox:</p>
+        <textarea id="modal-code-input" rows="8"
+                  class="w-full rounded-xl bg-slate-50 border border-slate-200 p-3 font-mono text-xs text-slate-900 focus:border-blue-500 focus:ring-0"
+                  placeholder="# Target microservice code&#10;import os&#10;def handler():&#10;    return {'status': 'active'}"></textarea>
       </div>
-      <div class="p-4 border-t border-slate-800 flex items-center justify-end gap-2 bg-slate-900/40">
-        <button onclick="closeCustomCodeModal()" class="px-3.5 py-2 rounded-lg text-xs font-mono text-slate-400 hover:text-white">Cancel</button>
-        <button onclick="attachCodeSnippet()" class="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs font-mono transition">
-          Attach to Copilot Prompt
+      <div class="p-3.5 border-t border-slate-200 flex items-center justify-end gap-2 bg-slate-50">
+        <button onclick="closeCustomCodeModal()" class="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-500 hover:text-slate-900">Cancel</button>
+        <button onclick="attachCodeSnippet()" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs font-mono transition">
+          Attach Code
         </button>
       </div>
     </div>
@@ -481,7 +442,7 @@
       }
     }
 
-    function logTerminal(msg, color = 'text-slate-300') {
+    function logTerminal(msg, color = 'text-slate-200') {
       const consoleEl = document.getElementById('terminal-stream-console');
       if (!consoleEl) return;
       const ts = new Date().toISOString().substring(11, 19);
@@ -514,7 +475,7 @@
       const code = document.getElementById('modal-code-input').value.trim();
       if (code) {
         attachedCodeSnippet = code;
-        document.getElementById('btn-code-attach').classList.add('text-cyan-400', 'bg-cyan-500/10');
+        document.getElementById('btn-code-attach').classList.add('text-blue-600', 'bg-blue-50');
         document.getElementById('copilot-input').placeholder = 'Code attached. Enter instructions (e.g. "Audit this code for vulnerabilities")...';
       }
       closeCustomCodeModal();
@@ -554,14 +515,14 @@
           };
           mediaRecorder.start();
           isRecordingVoice = true;
-          btn.classList.add('text-rose-500', 'bg-rose-500/20', 'animate-pulse');
+          btn.classList.add('text-rose-600', 'bg-rose-50', 'animate-pulse');
         } catch (err) {
           alert('Microphone access denied or unavailable: ' + err);
         }
       } else {
         if (mediaRecorder) mediaRecorder.stop();
         isRecordingVoice = false;
-        btn.classList.remove('text-rose-500', 'bg-rose-500/20', 'animate-pulse');
+        btn.classList.remove('text-rose-600', 'bg-rose-50', 'animate-pulse');
       }
     }
 
@@ -574,7 +535,7 @@
     function startNewSession() {
       clearChatThread();
       attachedCodeSnippet = null;
-      document.getElementById('btn-code-attach').classList.remove('text-cyan-400', 'bg-cyan-500/10');
+      document.getElementById('btn-code-attach').classList.remove('text-blue-600', 'bg-blue-50');
       document.getElementById('copilot-input').placeholder = 'Ask AegisSentinel to audit a service, simulate a breach, or paste code...';
     }
 
@@ -597,7 +558,7 @@
       const responseCardId = 'reply-' + Math.random().toString(36).substring(2, 9);
       appendCopilotLoadingCard(responseCardId);
 
-      logTerminal(`[COPILOT_QUERY] Operator Directive: "${message}"`, 'text-cyan-400');
+      logTerminal(`[COPILOT_QUERY] Operator Directive: "${message}"`, 'text-blue-400');
 
       try {
         const payload = {
@@ -617,7 +578,7 @@
         // Animate Multi-Model Stepper
         animateStepper(responseCardId, () => {
           renderFinishedCopilotCard(responseCardId, data);
-          confetti({ particleCount: 40, spread: 45, origin: { y: 0.7 } });
+          confetti({ particleCount: 35, spread: 40, origin: { y: 0.7 } });
         });
 
       } catch (err) {
@@ -627,7 +588,7 @@
         isProcessing = false;
         document.getElementById('btn-submit-message').disabled = false;
         attachedCodeSnippet = null;
-        document.getElementById('btn-code-attach').classList.remove('text-cyan-400', 'bg-cyan-500/10');
+        document.getElementById('btn-code-attach').classList.remove('text-blue-600', 'bg-blue-50');
       }
     }
 
@@ -635,91 +596,68 @@
     function appendUserMessage(text, codeSnippet) {
       const container = document.getElementById('chat-messages-stream');
       const div = document.createElement('div');
-      div.className = 'flex justify-end gap-3';
+      div.className = 'flex justify-end gap-2.5';
 
       let codeHtml = '';
       if (codeSnippet) {
         codeHtml = `
-          <div class="mt-2.5 p-2.5 rounded-lg bg-black/40 border border-slate-700/60 font-mono text-xs text-cyan-300 overflow-x-auto max-h-36">
+          <div class="mt-2 p-2 rounded-lg bg-slate-900 font-mono text-xs text-slate-200 overflow-x-auto max-h-36">
             <pre class="whitespace-pre">${escapeHtml(codeSnippet)}</pre>
           </div>
         `;
       }
 
       div.innerHTML = `
-        <div class="max-w-xl rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-600 p-4 text-white shadow-md shadow-cyan-900/20 space-y-1">
-          <div class="text-xs font-semibold flex items-center justify-between opacity-80 mb-1">
-            <span>Operator</span>
-            <span>Just now</span>
-          </div>
-          <div class="text-sm leading-relaxed">${escapeHtml(text)}</div>
+        <div class="max-w-xl rounded-2xl bg-blue-600 p-3.5 text-white shadow-xs space-y-1">
+          <div class="text-[11px] font-medium opacity-80 mb-0.5">Operator</div>
+          <div class="text-sm leading-relaxed break-words">${escapeHtml(text)}</div>
           ${codeHtml}
-        </div>
-        <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs shrink-0">
-          <i class="fa-solid fa-user"></i>
         </div>
       `;
       container.appendChild(div);
       scrollChatToBottom();
     }
 
-    // Append Loading State with Multi-Model Stepper
+    // Append Loading State with Minimalist Timeline Stepper
     function appendCopilotLoadingCard(cardId) {
       const container = document.getElementById('chat-messages-stream');
       const div = document.createElement('div');
       div.id = cardId;
-      div.className = 'flex gap-3';
+      div.className = 'flex gap-2.5';
       div.innerHTML = `
-        <div class="w-8 h-8 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-400 flex items-center justify-center text-xs shrink-0 shadow-sm">
+        <div class="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center text-xs shrink-0 mt-0.5">
           <i class="fa-solid fa-shield-halved"></i>
         </div>
-        <div class="flex-1 glass-card rounded-2xl p-4 sm:p-5 border border-slate-800 space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex-1 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 text-xs">
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-cyan-400 status-pulse"></span>
-              <span class="text-xs font-semibold text-white">AegisSentinel SecOps Copilot</span>
+              <span class="w-2 h-2 rounded-full bg-blue-500 status-pulse"></span>
+              <span class="font-semibold text-slate-900">SecOps Copilot Analysis</span>
             </div>
-            <span class="text-[11px] font-mono text-slate-400">gVisor microVM Quarantine</span>
+            <span class="font-mono text-slate-400">gVisor Sandbox</span>
           </div>
 
-          <!-- Multi-Model Stepper Widget -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono pt-1">
-            <div id="${cardId}-step-1" class="p-2.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 flex items-center gap-2">
-              <i id="${cardId}-icon-1" class="fa-solid fa-spinner fa-spin text-cyan-400"></i>
-              <div class="truncate">
-                <div class="text-[10px] text-slate-500">STEP 1</div>
-                <div class="truncate text-slate-300">Red Attack Probe</div>
-              </div>
+          <!-- Minimalist Timeline Stepper -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+            <div id="${cardId}-step-1" class="p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-500 flex items-center gap-2">
+              <i id="${cardId}-icon-1" class="fa-solid fa-spinner fa-spin text-blue-600"></i>
+              <span class="truncate">1. Red Strike</span>
             </div>
 
-            <div id="${cardId}-step-2" class="p-2.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 flex items-center gap-2">
-              <i id="${cardId}-icon-2" class="fa-solid fa-clock text-slate-500"></i>
-              <div class="truncate">
-                <div class="text-[10px] text-slate-500">STEP 2</div>
-                <div class="truncate text-slate-400">Blue Hotpatch</div>
-              </div>
+            <div id="${cardId}-step-2" class="p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-400 flex items-center gap-2">
+              <i id="${cardId}-icon-2" class="fa-solid fa-clock text-slate-400"></i>
+              <span class="truncate">2. Blue Patch</span>
             </div>
 
-            <div id="${cardId}-step-3" class="p-2.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 flex items-center gap-2">
-              <i id="${cardId}-icon-3" class="fa-solid fa-clock text-slate-500"></i>
-              <div class="truncate">
-                <div class="text-[10px] text-slate-500">STEP 3</div>
-                <div class="truncate text-slate-400">gVisor Sandbox</div>
-              </div>
+            <div id="${cardId}-step-3" class="p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-400 flex items-center gap-2">
+              <i id="${cardId}-icon-3" class="fa-solid fa-clock text-slate-400"></i>
+              <span class="truncate">3. Sandbox Run</span>
             </div>
 
-            <div id="${cardId}-step-4" class="p-2.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 flex items-center gap-2">
-              <i id="${cardId}-icon-4" class="fa-solid fa-clock text-slate-500"></i>
-              <div class="truncate">
-                <div class="text-[10px] text-slate-500">STEP 4</div>
-                <div class="truncate text-slate-400">Ed25519 Notary</div>
-              </div>
+            <div id="${cardId}-step-4" class="p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-400 flex items-center gap-2">
+              <i id="${cardId}-icon-4" class="fa-solid fa-clock text-slate-400"></i>
+              <span class="truncate">4. Notary Seal</span>
             </div>
-          </div>
-
-          <div class="text-xs text-slate-400 flex items-center gap-2">
-            <i class="fa-solid fa-circle-notch fa-spin text-cyan-400"></i>
-            <span>Orchestrating autonomous Maker-Breaker duel...</span>
           </div>
         </div>
       `;
@@ -732,35 +670,35 @@
       setTimeout(() => {
         setStepDone(cardId, 1);
         setStepRunning(cardId, 2);
-        logTerminal('[MAKER] Blue Agent (Qwen-3.8) synthesizing invariant hotpatch...', 'text-cyan-400');
-      }, 500);
+        logTerminal('[MAKER] Blue Agent (Qwen-3.8) synthesizing invariant hotpatch...', 'text-blue-400');
+      }, 400);
 
       setTimeout(() => {
         setStepDone(cardId, 2);
         setStepRunning(cardId, 3);
-        logTerminal('[SANDBOX] Validating AST & cgroups limits inside gVisor runsc...', 'text-slate-300');
-      }, 1000);
+        logTerminal('[SANDBOX] Validating AST & cgroups limits inside gVisor runsc...', 'text-slate-200');
+      }, 800);
 
       setTimeout(() => {
         setStepDone(cardId, 3);
         setStepRunning(cardId, 4);
         logTerminal('[NOTARY] Computing Ed25519 signature & appending SHA-256 chain hash...', 'text-emerald-400');
-      }, 1500);
+      }, 1200);
 
       setTimeout(() => {
         setStepDone(cardId, 4);
         onComplete();
-      }, 1900);
+      }, 1500);
     }
 
     function setStepRunning(cardId, stepNum) {
       const el = document.getElementById(`${cardId}-step-${stepNum}`);
       const icon = document.getElementById(`${cardId}-icon-${stepNum}`);
       if (el) {
-        el.className = 'p-2.5 rounded-lg border border-cyan-500/50 bg-cyan-500/10 text-cyan-300 flex items-center gap-2';
+        el.className = 'p-2 rounded-lg border border-blue-300 bg-blue-50 text-blue-700 flex items-center gap-2';
       }
       if (icon) {
-        icon.className = 'fa-solid fa-spinner fa-spin text-cyan-400';
+        icon.className = 'fa-solid fa-spinner fa-spin text-blue-600';
       }
     }
 
@@ -768,10 +706,10 @@
       const el = document.getElementById(`${cardId}-step-${stepNum}`);
       const icon = document.getElementById(`${cardId}-icon-${stepNum}`);
       if (el) {
-        el.className = 'p-2.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 flex items-center gap-2';
+        el.className = 'p-2 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 flex items-center gap-2';
       }
       if (icon) {
-        icon.className = 'fa-solid fa-circle-check text-emerald-400';
+        icon.className = 'fa-solid fa-circle-check text-emerald-600';
       }
     }
 
@@ -780,84 +718,84 @@
       const card = document.getElementById(cardId);
       if (!card) return;
 
-      const inner = card.querySelector('.glass-card');
+      const inner = card.querySelector('.bg-white');
       inner.innerHTML = `
         <!-- Header & Badges -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
-          <div class="flex items-center gap-2.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
             <div>
-              <span class="text-sm font-semibold text-white">Workload Immunized: ${escapeHtml(data.scenario)}</span>
-              <span class="block text-[11px] font-mono text-slate-400">Mission: ${escapeHtml(data.mission_id)}</span>
+              <span class="text-sm font-semibold text-slate-900">${escapeHtml(data.scenario)}</span>
+              <span class="block text-[11px] font-mono text-slate-500">Mission: ${escapeHtml(data.mission_id)}</span>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-rose-950/80 text-rose-300 border border-rose-800/60 font-semibold">
+          <div class="flex items-center gap-1.5">
+            <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-rose-50 text-rose-700 border border-rose-200 font-medium">
               ${escapeHtml(data.cvss_score.split(' - ')[0])}
             </span>
-            <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 font-semibold">
-              0.00% Blast Radius
+            <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+              Verified Safe
             </span>
           </div>
         </div>
 
-        <!-- Markdown Summary -->
-        <div class="text-xs text-slate-300 leading-relaxed space-y-2 prose prose-invert max-w-none">
-          <p>${escapeHtml(data.reply).replace(/### /g, '<b>').replace(/\n\n/g, '<br/><br/>').replace(/- \*\*(.*?)\*\*/g, '&bull; <b>$1</b>')}</p>
+        <!-- Clean Formatted Summary -->
+        <div class="text-xs text-slate-700 leading-relaxed space-y-1.5">
+          <p>${escapeHtml(data.reply).replace(/### /g, '<b>').replace(/\n\n/g, '<br/>').replace(/- \*\*(.*?)\*\*/g, '&bull; <b>$1</b>')}</p>
         </div>
 
         <!-- Side-by-Side Red vs Blue Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
           <!-- Red Attack -->
-          <div class="rounded-xl border border-rose-900/40 bg-rose-950/20 p-3.5 space-y-2">
-            <div class="flex items-center justify-between text-[11px] font-mono font-semibold text-rose-400">
-              <span class="flex items-center gap-1.5"><i class="fa-solid fa-crosshairs"></i> RED TEAM STRIKE</span>
-              <span class="text-[10px] text-slate-400">DeepSeek-V4.1</span>
+          <div class="rounded-xl border border-red-200 bg-red-50/50 p-3 space-y-1.5">
+            <div class="flex items-center justify-between text-[11px] font-mono font-medium text-red-800">
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-crosshairs"></i> Red Attack Probe</span>
+              <span class="text-[10px] text-red-600">DeepSeek-V4.1</span>
             </div>
-            <p class="text-xs text-slate-300 leading-normal">${escapeHtml(data.red_findings)}</p>
+            <p class="text-xs text-slate-800 leading-normal">${escapeHtml(data.red_findings)}</p>
           </div>
 
           <!-- Blue Patch -->
-          <div class="rounded-xl border border-emerald-900/40 bg-emerald-950/20 p-3.5 space-y-2">
-            <div class="flex items-center justify-between text-[11px] font-mono font-semibold text-emerald-400">
-              <span class="flex items-center gap-1.5"><i class="fa-solid fa-code-merge"></i> BLUE TEAM IMMUNITY</span>
-              <span class="text-[10px] text-slate-400">Qwen-3.8</span>
+          <div class="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3 space-y-1.5">
+            <div class="flex items-center justify-between text-[11px] font-mono font-medium text-emerald-800">
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-code-merge"></i> Blue Remediation</span>
+              <span class="text-[10px] text-emerald-600">Qwen-3.8</span>
             </div>
-            <p class="text-xs text-slate-300 leading-normal">${escapeHtml(data.blue_patch)}</p>
+            <p class="text-xs text-slate-800 leading-normal">${escapeHtml(data.blue_patch)}</p>
           </div>
         </div>
 
-        <!-- Cryptographic Receipt Pill Row -->
-        <div class="rounded-xl border border-slate-800 bg-slate-950/60 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
-          <div class="space-y-0.5 truncate">
-            <div class="text-[10px] text-slate-400">ED25519 ATTESTATION SIGNATURE:</div>
-            <div class="text-slate-300 truncate text-[11px]"><code>${escapeHtml(data.ed25519_signature)}</code></div>
+        <!-- Cryptographic Receipt Row -->
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
+          <div class="space-y-0.5 truncate max-w-sm">
+            <div class="text-[10px] text-slate-500">ED25519 SIGNATURE:</div>
+            <div class="text-slate-800 truncate text-[11px]"><code>${escapeHtml(data.ed25519_signature.slice(0, 36))}...</code></div>
           </div>
-          <div class="flex items-center gap-3 shrink-0 text-slate-400 text-[11px]">
-            <span>Latency: <b class="text-slate-200">${data.duration_ms}ms</b></span>
-            <span>RAM: <b class="text-slate-200">${data.memory_peak_mb}MB</b></span>
+          <div class="flex items-center gap-3 shrink-0 text-slate-600 text-[11px]">
+            <span>Latency: <b class="text-slate-900">${data.duration_ms}ms</b></span>
+            <span>RAM: <b class="text-slate-900">${data.memory_peak_mb}MB</b></span>
           </div>
         </div>
 
-        <!-- Action Buttons: PDF Download & Voice Alert Player -->
-        <div class="pt-1 flex flex-wrap items-center justify-between gap-2.5">
+        <!-- Action Buttons -->
+        <div class="pt-1 flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-2">
             <a href="${data.pdf_report_url}" target="_blank"
-               class="px-3.5 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-semibold transition flex items-center gap-2 shadow-sm">
+               class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-mono font-medium transition flex items-center gap-1.5 shadow-xs">
               <i class="fa-solid fa-file-pdf"></i>
-              <span>Download Executive PDF Report</span>
+              <span>Download PDF Report</span>
             </a>
 
             <button onclick="playVoiceBriefing('${escapeHtml(data.mission_id)}')"
-                    class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono transition flex items-center gap-2 border border-slate-700">
-              <i class="fa-solid fa-volume-high text-cyan-400"></i>
-              <span>Play Qwen-TTS Voice Briefing</span>
+                    class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 text-xs font-mono transition flex items-center gap-1.5 border border-slate-200">
+              <i class="fa-solid fa-volume-high text-blue-600"></i>
+              <span>Audio Briefing</span>
             </button>
           </div>
 
-          <button onclick="toggleTerminalDrawer()" class="text-xs font-mono text-slate-400 hover:text-white flex items-center gap-1.5">
-            <i class="fa-solid fa-terminal text-cyan-400"></i>
-            <span>Inspect MicroVM Log</span>
+          <button onclick="toggleTerminalDrawer()" class="text-xs font-mono text-slate-500 hover:text-slate-900 flex items-center gap-1.5">
+            <i class="fa-solid fa-terminal text-blue-600"></i>
+            <span>Sandbox Log</span>
           </button>
         </div>
       `;
@@ -868,9 +806,9 @@
     function renderErrorCard(cardId, errorMsg) {
       const card = document.getElementById(cardId);
       if (!card) return;
-      card.querySelector('.glass-card').innerHTML = `
-        <div class="text-xs text-rose-400 space-y-1">
-          <div class="font-bold flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Security Execution Error</div>
+      card.querySelector('.bg-white').innerHTML = `
+        <div class="text-xs text-rose-600 space-y-1">
+          <div class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation"></i> Security Execution Error</div>
           <div>${escapeHtml(errorMsg)}</div>
         </div>
       `;
@@ -878,12 +816,12 @@
 
     // Play Voice Alert Briefing
     async function playVoiceBriefing(missionId) {
-      logTerminal(`[AUDIO_SYNTHESIS] Synthesizing executive voice alert via qwen3-tts...`, 'text-cyan-400');
+      logTerminal(`[AUDIO_SYNTHESIS] Synthesizing executive voice alert via qwen3-tts...`, 'text-blue-400');
       try {
         const res = await fetch('/api/voice-alert', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ text: `Alert: Security vulnerability in mission ${missionId} has been successfully quarantined and neutralized by AegisSentinel Blue Agent.` })
+          body: new URLSearchParams({ text: `Alert: Security vulnerability in mission ${missionId} quarantined and neutralized.` })
         });
         const blob = await res.blob();
         const audio = new Audio(URL.createObjectURL(blob));
@@ -901,7 +839,7 @@
         const res = await fetch('/api/chaos-test', { method: 'POST' });
         const data = await res.json();
         logTerminal(`[CHAOS_DISPATCHED] Task ID: ${data.task_id}. Probing file traversal, PIDs, and network.`, 'text-emerald-400');
-        alert(`1-Click Red-Team Chaos Probe Dispatched!\n\nTask ID: ${data.task_id}\nTarget: Sealed Quarantine Sandbox\nVectors Tested: Path Jail Traversal, Recursive Fork Bomb, Network Socket Exfiltration.`);
+        alert(`1-Click Chaos Probe Dispatched!\n\nTask ID: ${data.task_id}\nVectors Tested: Path Jail Traversal, Recursive Fork Bomb, Network Socket Exfiltration.`);
       } catch (err) {
         logTerminal(`[CHAOS_ERROR] ${err}`, 'text-rose-400');
       }
@@ -917,11 +855,11 @@
           list.innerHTML = '';
           data.missions.forEach(m => {
             const row = document.createElement('div');
-            row.className = 'p-2 rounded bg-slate-900/40 border border-slate-800/50 flex items-center justify-between cursor-pointer hover:bg-slate-800/60 transition';
+            row.className = 'p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition';
             row.onclick = () => window.open(`/api/report/pdf/${m.mission_id}`, '_blank');
             row.innerHTML = `
               <span class="truncate">${escapeHtml(m.task_slug)}</span>
-              <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 text-[9px] shrink-0 font-semibold">${escapeHtml(m.status)}</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] shrink-0 font-medium">${escapeHtml(m.status)}</span>
             `;
             list.appendChild(row);
           });
