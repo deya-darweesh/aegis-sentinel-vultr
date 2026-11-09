@@ -209,7 +209,7 @@
       <div class="p-3.5 border-t border-slate-200 bg-slate-50 space-y-1.5">
         <div class="flex items-center justify-between text-[11px] font-mono">
           <span class="text-slate-500">Audit Ledger Root:</span>
-          <span class="text-slate-900 font-semibold">{{ LATEST_HASH }}...</span>
+          <span class="text-slate-900 font-semibold truncate max-w-[110px]" title="{{ LATEST_HASH }}">{{ LATEST_HASH }}...</span>
         </div>
         <div class="text-[10px] text-slate-500 flex items-center gap-1.5">
           <i class="fa-solid fa-certificate text-emerald-600"></i>
@@ -362,9 +362,9 @@
         <button onclick="toggleTerminalDrawer()" class="hover:text-slate-900 p-1 rounded hover:bg-slate-200 transition"><i class="fa-solid fa-xmark"></i></button>
       </div>
     </div>
-    <!-- Drawer Console Output -->
-    <div id="terminal-stream-console" class="p-3 h-60 overflow-y-auto font-mono text-xs text-slate-800 space-y-1 bg-slate-950 text-slate-200">
-      <div class="text-slate-400">[SYSTEM_READY] AegisSentinel containment sandbox active. Network air-gap enforced.</div>
+    <!-- Drawer Console Output (Clean Minimalist Light Stream) -->
+    <div id="terminal-stream-console" class="p-3 h-60 overflow-y-auto font-mono text-xs text-slate-800 space-y-1 bg-slate-50 border-t border-slate-100">
+      <div class="text-slate-500">[SYSTEM_READY] AegisSentinel containment sandbox active. Network air-gap enforced.</div>
     </div>
   </div>
 
@@ -442,7 +442,7 @@
       }
     }
 
-    function logTerminal(msg, color = 'text-slate-200') {
+    function logTerminal(msg, color = 'text-slate-700') {
       const consoleEl = document.getElementById('terminal-stream-console');
       if (!consoleEl) return;
       const ts = new Date().toISOString().substring(11, 19);
@@ -455,7 +455,7 @@
 
     function clearTerminalOutput() {
       document.getElementById('terminal-stream-console').innerHTML =
-        '<div class="text-slate-400">[TERMINAL_CLEARED] Ready.</div>';
+        '<div class="text-slate-500">[TERMINAL_CLEARED] Ready.</div>';
     }
 
     function copyTerminalOutput() {
@@ -558,7 +558,7 @@
       const responseCardId = 'reply-' + Math.random().toString(36).substring(2, 9);
       appendCopilotLoadingCard(responseCardId);
 
-      logTerminal(`[COPILOT_QUERY] Operator Directive: "${message}"`, 'text-blue-400');
+      logTerminal(`[COPILOT_QUERY] Operator Directive: "${message}"`, 'text-blue-700');
 
       try {
         const payload = {
@@ -582,7 +582,7 @@
         });
 
       } catch (err) {
-        logTerminal(`[COPILOT_ERROR] ${err}`, 'text-rose-400');
+        logTerminal(`[COPILOT_ERROR] ${err}`, 'text-rose-700');
         renderErrorCard(responseCardId, err.message);
       } finally {
         isProcessing = false;
@@ -670,19 +670,19 @@
       setTimeout(() => {
         setStepDone(cardId, 1);
         setStepRunning(cardId, 2);
-        logTerminal('[MAKER] Blue Agent (Qwen-3.8) synthesizing invariant hotpatch...', 'text-blue-400');
+        logTerminal('[MAKER] Blue Agent (Qwen-3.8) synthesizing invariant hotpatch...', 'text-blue-700');
       }, 400);
 
       setTimeout(() => {
         setStepDone(cardId, 2);
         setStepRunning(cardId, 3);
-        logTerminal('[SANDBOX] Validating AST & cgroups limits inside gVisor runsc...', 'text-slate-200');
+        logTerminal('[SANDBOX] Validating AST & cgroups limits inside gVisor runsc...', 'text-slate-700');
       }, 800);
 
       setTimeout(() => {
         setStepDone(cardId, 3);
         setStepRunning(cardId, 4);
-        logTerminal('[NOTARY] Computing Ed25519 signature & appending SHA-256 chain hash...', 'text-emerald-400');
+        logTerminal('[NOTARY] Computing Ed25519 signature & appending SHA-256 chain hash...', 'text-emerald-700');
       }, 1200);
 
       setTimeout(() => {
@@ -823,7 +823,7 @@
 
     // Play Voice Alert Briefing
     async function playVoiceBriefing(missionId) {
-      logTerminal(`[AUDIO_SYNTHESIS] Synthesizing executive voice alert via qwen3-tts...`, 'text-blue-400');
+      logTerminal(`[AUDIO_SYNTHESIS] Synthesizing executive voice alert via qwen3-tts...`, 'text-blue-700');
       try {
         const res = await fetch('/api/voice-alert', {
           method: 'POST',
@@ -832,23 +832,23 @@
         });
         const blob = await res.blob();
         const audio = new Audio(URL.createObjectURL(blob));
-        audio.play().catch(e => logTerminal('[AUDIO_NOTICE] Autoplay restricted by browser.', 'text-slate-400'));
-        logTerminal(`[AUDIO_PLAYING] Vocal containment briefing playing.`, 'text-emerald-400');
+        audio.play().catch(e => logTerminal('[AUDIO_NOTICE] Autoplay restricted by browser.', 'text-slate-500'));
+        logTerminal(`[AUDIO_PLAYING] Vocal containment briefing playing.`, 'text-emerald-700');
       } catch (err) {
-        logTerminal(`[AUDIO_ERR] ${err}`, 'text-rose-400');
+        logTerminal(`[AUDIO_ERR] ${err}`, 'text-rose-700');
       }
     }
 
     // 1-Click Chaos Blast Test
     async function runChaosTest() {
-      logTerminal('[CHAOS_PROBE] Initiating 1-Click Chaos Sandbox Injection...', 'text-amber-400');
+      logTerminal('[CHAOS_PROBE] Initiating 1-Click Chaos Sandbox Injection...', 'text-amber-700');
       try {
         const res = await fetch('/api/chaos-test', { method: 'POST' });
         const data = await res.json();
-        logTerminal(`[CHAOS_DISPATCHED] Task ID: ${data.task_id}. Probing file traversal, PIDs, and network.`, 'text-emerald-400');
+        logTerminal(`[CHAOS_DISPATCHED] Task ID: ${data.task_id}. Probing file traversal, PIDs, and network.`, 'text-emerald-700');
         alert(`1-Click Chaos Probe Dispatched!\n\nTask ID: ${data.task_id}\nVectors Tested: Path Jail Traversal, Recursive Fork Bomb, Network Socket Exfiltration.`);
       } catch (err) {
-        logTerminal(`[CHAOS_ERROR] ${err}`, 'text-rose-400');
+        logTerminal(`[CHAOS_ERROR] ${err}`, 'text-rose-700');
       }
     }
 
@@ -862,10 +862,10 @@
           list.innerHTML = '';
           data.missions.forEach(m => {
             const row = document.createElement('div');
-            row.className = 'p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition';
+            row.className = 'p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition gap-2';
             row.onclick = () => window.open(`/api/report/pdf/${m.mission_id}`, '_blank');
             row.innerHTML = `
-              <span class="truncate">${escapeHtml(m.task_slug)}</span>
+              <span class="truncate max-w-[130px]" title="${escapeHtml(m.task_slug)}">${escapeHtml(m.task_slug)}</span>
               <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] shrink-0 font-medium">${escapeHtml(m.status)}</span>
             `;
             list.appendChild(row);
