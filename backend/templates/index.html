@@ -136,6 +136,17 @@
     <!-- ================= MINIMALIST PROMPT INPUT ================= -->
     <div class="pt-4 sticky bottom-4 bg-stone-50/90 backdrop-blur-xs">
       <div class="rounded-2xl border border-slate-200 bg-white shadow-xs p-2.5 focus-within:border-slate-400 transition">
+        <!-- Attached Code Snippet Banner -->
+        <div id="attached-code-banner" class="hidden mb-2 flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-blue-50/70 border border-blue-200/60 text-xs text-blue-900 font-mono">
+          <div class="flex items-center gap-1.5 truncate">
+            <i class="fa-solid fa-code text-[11px] text-blue-600"></i>
+            <span id="attached-code-preview" class="truncate text-[11px]">Attached snippet</span>
+          </div>
+          <button onclick="clearAttachedCode()" class="text-blue-500 hover:text-blue-800 text-xs ml-2 p-0.5" title="Remove attached code">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
         <!-- Input Textarea -->
         <textarea id="prompt-input"
                   rows="1"
@@ -214,14 +225,23 @@
         <span class="text-xs font-semibold text-slate-900">Attach Microservice Code</span>
         <button onclick="toggleCodeModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="p-3">
+      <div class="p-3 space-y-2">
+        <div class="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+          <span class="text-[11px] text-slate-400">Samples:</span>
+          <button type="button" onclick="loadSampleCode('payment')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] transition">Payment Gateway</button>
+          <button type="button" onclick="loadSampleCode('fork')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] transition">Fork Allocator</button>
+          <button type="button" onclick="loadSampleCode('ledger')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] transition">Ledger Rounding</button>
+        </div>
         <textarea id="modal-code-text" rows="6"
                   class="w-full rounded-xl bg-slate-50 border border-slate-200 p-2.5 font-mono text-xs text-slate-800 focus:ring-0 focus:border-slate-400"
                   placeholder="# Paste Python workload&#10;def process_transaction(user_id):&#10;    pass"></textarea>
       </div>
-      <div class="p-3 border-t border-slate-100 flex justify-end gap-2 bg-slate-50">
-        <button onclick="toggleCodeModal()" class="px-3 py-1 rounded-md text-xs text-slate-500 hover:text-slate-800">Cancel</button>
-        <button onclick="saveAttachedCode()" class="px-3 py-1 rounded-md bg-slate-900 text-white font-medium text-xs">Attach</button>
+      <div class="p-3 border-t border-slate-100 flex items-center justify-between bg-slate-50">
+        <button onclick="clearAttachedCode(); toggleCodeModal();" class="text-xs text-rose-600 hover:text-rose-800">Clear</button>
+        <div class="flex items-center gap-2">
+          <button onclick="toggleCodeModal()" class="px-3 py-1 rounded-md text-xs text-slate-500 hover:text-slate-800">Cancel</button>
+          <button onclick="saveAttachedCode()" class="px-3 py-1 rounded-md bg-slate-900 text-white font-medium text-xs">Attach</button>
+        </div>
       </div>
     </div>
   </div>
@@ -266,20 +286,40 @@
       document.getElementById('code-modal').classList.toggle('hidden');
     }
 
+    function loadSampleCode(type) {
+      const samples = {
+        payment: `# Payment Gateway Service\nimport os\nimport urllib.request\n\ndef process_checkout(card_token, amount):\n    api_key = os.environ.get("STRIPE_KEY", "sk_live_secret")\n    # Vulnerable outbound exfiltration attempt\n    return {"status": "authorized", "amount": amount}\n`,
+        fork: `# Recursive Memory Allocator\ndef recursive_worker(depth=0):\n    # 50MB per frame\n    buffer = bytearray(50 * 1024 * 1024)\n    if depth < 10:\n        return recursive_worker(depth + 1)\n    return len(buffer)\n`,
+        ledger: `# Financial Settlement Engine\ndef calculate_balance(deposits):\n    balance = 0.0\n    for d in deposits:\n        balance += float(d) * 0.1\n    return round(balance, 2)\n`
+      };
+      document.getElementById('modal-code-text').value = samples[type] || '';
+    }
+
     function saveAttachedCode() {
       const val = document.getElementById('modal-code-text').value.trim();
       if (val) {
         attachedCode = val;
+        const lineCount = val.split('\n').length;
+        document.getElementById('attached-code-preview').textContent = `Python workload (${lineCount} line${lineCount > 1 ? 's' : ''})`;
+        document.getElementById('attached-code-banner').classList.remove('hidden');
         document.getElementById('btn-code').classList.add('text-blue-600', 'bg-blue-50');
+      } else {
+        clearAttachedCode();
       }
       toggleCodeModal();
+    }
+
+    function clearAttachedCode() {
+      attachedCode = null;
+      document.getElementById('modal-code-text').value = '';
+      document.getElementById('attached-code-banner').classList.add('hidden');
+      document.getElementById('btn-code').classList.remove('text-blue-600', 'bg-blue-50');
     }
 
     function resetConversation() {
       document.getElementById('chat-thread').innerHTML = '';
       document.getElementById('welcome-state').classList.remove('hidden');
-      attachedCode = null;
-      document.getElementById('btn-code').classList.remove('text-blue-600', 'bg-blue-50');
+      clearAttachedCode();
       input.value = '';
       input.style.height = 'auto';
     }
@@ -386,8 +426,7 @@
       } finally {
         isBusy = false;
         document.getElementById('btn-send').disabled = false;
-        attachedCode = null;
-        document.getElementById('btn-code').classList.remove('text-blue-600', 'bg-blue-50');
+        clearAttachedCode();
       }
     }
 
